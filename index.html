@@ -4,701 +4,346 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mixer</title>
-<meta name="description" content="Результаты Mixer — маленьких моделей для моддинга Minecraft: бенчмарк по моддингу и HumanEval-Java.">
+<meta name="description" content="Mixer — локальные модели, которые пишут моды, рендер и миксины для Minecraft на Java под нужную версию игры.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-  /* Токены вместо тех, что даёт движок дашборда. Сетка: одна колонка до 1040px. */
+  /* Один тёмный мир, как у ночного неба над блоками: узкая колонка 1040px, карточки в ряд. */
   :root {
-    --color-bg: #f6f7f9; --color-panel: #ffffff; --color-fg: #16191f; --color-fg-muted: #5b6372;
-    --color-border-line: #dfe3ea; --color-ok: #2f9e6b; --color-warn: #d99a2b; --color-bad: #d6504a;
-    --cds-chart-muted: #b9c0cc; --cds-chart-status-critical: #d6504a; --cds-chart-grid: #e8ebf0;
-    --cds-chart-axis: #c4cad4; --cds-text-secondary: #5b6372; --cds-surface-popover: #ffffff;
-    --cds-border: #dfe3ea; --cds-shadow-popover: 0 6px 24px rgba(20, 30, 50, .14);
-    --c1: #3f6fe0; --c2: #8a55d6; --c3: #1f9c8f; --c4: #e07a3f;
-    --font-anthropic-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --font-anthropic-serif: "Space Grotesk", "Inter", system-ui, sans-serif;
-    --cds-font-size-caption: 13px; --cds-font-size-body: 16px; --cds-font-size-heading: 20px; --cds-font-size-title: 34px;
-    --cds-font-weight-medium: 600;
-    --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 16px; --cds-gap-lg: 24px; --cds-gap-xl: 40px;
-    --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 18px; --cds-radius: 10px;
+    color-scheme: dark;
+    --bg: #161617; --card: #1f1f21; --line: #2c2c2f; --fg: #f2f2f0; --muted: #9a9a9e; --faint: #5c5c62;
+    --bar: #343438; --bar-base: #6a6a70; --bar-hi: #f2f2f0; --accent: #7ad37a; --down: #e48a6b;
+    --display: "Manrope", "Inter", system-ui, sans-serif; --text: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
   }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-    --color-bg: #0f1216; --color-panel: #171b21; --color-fg: #e9edf3; --color-fg-muted: #9aa3b2;
-    --color-border-line: #2a313b; --color-ok: #3fbf86; --color-warn: #e3ab45; --color-bad: #ef6b63;
-    --cds-chart-muted: #4b5563; --cds-chart-status-critical: #ef6b63; --cds-chart-grid: #232a33;
-    --cds-chart-axis: #3a424e; --cds-text-secondary: #9aa3b2; --cds-surface-popover: #1d222a;
-    --cds-border: #2f3742; --cds-shadow-popover: 0 6px 24px rgba(0, 0, 0, .5);
-    --c1: #6d93ff; --c2: #b28af0; --c3: #3fc4b4; --c4: #f39a63; color-scheme: dark; } }
-  :root[data-theme="dark"] {
-    --color-bg: #0f1216; --color-panel: #171b21; --color-fg: #e9edf3; --color-fg-muted: #9aa3b2;
-    --color-border-line: #2a313b; --color-ok: #3fbf86; --color-warn: #e3ab45; --color-bad: #ef6b63;
-    --cds-chart-muted: #4b5563; --cds-chart-status-critical: #ef6b63; --cds-chart-grid: #232a33;
-    --cds-chart-axis: #3a424e; --cds-text-secondary: #9aa3b2; --cds-surface-popover: #1d222a;
-    --cds-border: #2f3742; --cds-shadow-popover: 0 6px 24px rgba(0, 0, 0, .5);
-    --c1: #6d93ff; --c2: #b28af0; --c3: #3fc4b4; --c4: #f39a63; color-scheme: dark; }
-  html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); }
-  body { font-family: var(--font-anthropic-sans); font-size: 15px;
-         padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px));
-         padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-  #dash-root { max-width: 1040px; margin: 0 auto; }
-  .mx-foot { max-width: 1040px; margin: 48px auto 0; color: var(--color-fg-muted); font-size: 13px; line-height: 1.6; }
-  .mx-foot a { color: inherit; }
-  @media (max-width: 520px) { :root { --cds-font-size-title: 27px; } body { padding-block: 24px 48px; } }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--fg); }
+  body { font-family: var(--text); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  #sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  .wrap { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto;
+          padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+  .hero { min-height: 520px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); align-items: center; gap: 40px;
+          padding-block: 72px 48px; }
+  .hero h1 { font-family: var(--display); font-weight: 800; font-size: clamp(56px, 9vw, 88px); line-height: 1; margin: 0 0 22px; letter-spacing: -.02em; }
+  .hero p { font-size: clamp(17px, 2vw, 19px); color: #d7d7d4; margin: 0; max-width: 30em; text-wrap: balance; }
+  .hero p b { color: var(--fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .hero .cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .btn { display: inline-flex; align-items: center; padding: 11px 18px; border-radius: 10px; text-decoration: none; font-weight: 500;
+         border: 1px solid var(--line); background: var(--card); }
+  .btn:hover { border-color: var(--faint); }
+  .btn.main { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .mark { justify-self: center; width: min(360px, 80%); opacity: .55; }
+  .mark svg { width: 100%; height: auto; display: block; }
+
+  section { padding-block: 40px; }
+  h2 { font-family: var(--display); font-weight: 700; font-size: 26px; margin: 0 0 22px; letter-spacing: -.01em; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border-radius: 16px; padding: 26px 26px 24px; display: flex; flex-direction: column; min-width: 0; }
+  .card h3 { font-family: var(--display); font-weight: 700; font-size: 22px; margin: 0; }
+  .card .spec { color: var(--muted); font-size: 13px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .card .use { margin: 16px 0 26px; font-size: 15.5px; line-height: 1.5; min-height: 3em; }
+  .metric { margin-top: 18px; }
+  .metric:first-of-type { margin-top: auto; }
+  .metric .k { color: var(--muted); font-size: 13px; }
+  .metric .row { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 10px; }
+  .metric .v { font-family: var(--display); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+  .metric.big .v { font-size: 44px; line-height: 1.1; }
+  .metric.small .v { font-size: 22px; }
+  .metric .base { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .metric .base.worse { color: var(--down); }
+  .bar { position: relative; height: 5px; background: var(--bar); border-radius: 99px; overflow: hidden; }
+  .bar i { position: absolute; top: 0; bottom: 0; border-radius: 99px; }
+  .bar .b { left: 0; background: var(--bar-base); }
+  .bar .m { background: var(--bar-hi); }
+  .card .dl { margin-top: 22px; font-size: 14px; color: var(--muted); }
+  .card .dl a { color: var(--fg); }
+  .card.soon { border: 1px dashed var(--line); background: transparent; }
+  .card.soon .use { color: var(--muted); }
+  .card.soon .note { margin-top: auto; color: var(--faint); font-size: 13px; }
+
+  .run { display: grid; gap: 12px; max-width: 760px; }
+  .cmd { display: flex; gap: 8px; align-items: stretch; min-width: 0; }
+  .cmd pre { flex: 1; min-width: 0; margin: 0; padding: 14px 16px; background: var(--card); border-radius: 12px; overflow-x: auto;
+             font-family: var(--mono); font-size: 13.5px; line-height: 1.6; color: #e6e6e2; }
+  .cmd pre .t { color: var(--accent); }
+  .cmd button { border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 12px; padding: 0 14px;
+                font: inherit; font-size: 13px; cursor: pointer; }
+  .run p { margin: 0; color: var(--muted); max-width: 64ch; }
+  .run code { font-family: var(--mono); font-size: 13px; color: var(--fg); }
+
+  .chart { position: relative; background: var(--card); border-radius: 16px; padding: 20px 20px 10px; min-height: 280px; }
+  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .chart h4 { margin: 0 0 6px; font-size: 14px; font-weight: 500; color: var(--muted); }
+  .chart svg text { fill: var(--muted); font-size: 11px; font-family: var(--text); }
+  .chart .empty { color: var(--faint); font-size: 14px; padding: 40px 0; }
+  .tip { position: absolute; pointer-events: none; background: #2a2a2d; border: 1px solid var(--line); border-radius: 10px;
+         padding: 8px 10px; font-size: 12.5px; line-height: 1.5; box-shadow: 0 8px 28px rgba(0,0,0,.45); z-index: 3;
+         font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tip b { font-weight: 500; }
+  .tip span { color: var(--muted); }
+  .sub { color: var(--muted); margin: -10px 0 20px; max-width: 64ch; }
+
+  .tbl { overflow-x: auto; background: var(--card); border-radius: 16px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 12px 16px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  tr:last-child td { border-bottom: 0; }
+  th { color: var(--muted); font-weight: 500; font-size: 13px; }
+  td.ours { font-weight: 500; }
+  td .tag { color: var(--faint); font-size: 12px; margin-left: 6px; }
+
+  footer { padding-block: 40px 64px; color: var(--faint); font-size: 13px; }
+  footer a { color: var(--muted); }
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; min-height: 0; padding-block: 56px 24px; }
+    .mark { display: none; }
+    .metric.big .v { font-size: 38px; }
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script>
-  // Замена движку дашборда: данные встроены, рисунки перерисовываются при смене ширины.
-  (function () {
-    const RAW = {"modding": "model,kind,tasks,total,syntax,real_api,no_leaks,anchors,has_code,sec_per_task\nQwen3-0.6B,основа,60,50.1,80.0,5.9,100.0,14.5,100.0,9.8\nQwen3-0.6B abliterated,основа,60,48.4,76.7,7.1,95.0,15.0,100.0,11.8\nQwen2.5-Coder-0.5B,основа,60,46.1,68.3,31.9,66.7,17.5,100.0,10.6\nMixer-0.6B v1,Mixer,60,12.2,11.7,13.3,15.0,8.8,15.0,26.8\nMixer-0.6B v2,Mixer,60,70.5,75.0,83.2,88.3,35.6,100.0,9.3\nMixer-0.5B,Mixer,60,72.6,73.3,87.1,90.0,40.0,98.3,9.9\nDeepSeek flash,ориентир,60,86.5,90.0,98.3,98.3,59.5,100.0,6.4\n", "humaneval": "model,kind,tasks,pass_at_1,compile_error,tests_failed,timeout\nQwen3-0.6B,основа,158,16.5,55.7,27.8,0\nQwen3-0.6B abliterated,основа,158,15.2,51.9,32.3,1\nQwen2.5-Coder-0.5B,основа,158,39.2,29.1,31.6,0\nMixer-0.6B v1,Mixer,158,22.2,25.3,52.5,0\nMixer-0.6B v2,Mixer,158,25.3,31.6,43.0,0\nMixer-0.5B,Mixer,158,36.7,21.5,41.8,0\n", "eras": "model,era,versions,leak,anchors,tasks\nQwen3-0.6B,E06,1.17-1.19.4,0.0,11.6,20\nQwen3-0.6B,E07,1.20-1.20.6,0.0,10.0,5\nQwen3-0.6B,E08,1.21-1.21.1,0.0,13.5,20\nQwen3-0.6B,E09,1.21.2-1.21.4,0.0,25.2,5\nQwen3-0.6B,E10,1.21.5+,0.0,18.0,5\nQwen3-0.6B,E11,26.x+,0.0,20.0,5\nQwen3-0.6B abliterated,E06,1.17-1.19.4,15.0,13.5,20\nQwen3-0.6B abliterated,E07,1.20-1.20.6,0.0,6.7,5\nQwen3-0.6B abliterated,E08,1.21-1.21.1,0.0,14.5,20\nQwen3-0.6B abliterated,E09,1.21.2-1.21.4,0.0,15.7,5\nQwen3-0.6B abliterated,E10,1.21.5+,0.0,28.7,5\nQwen3-0.6B abliterated,E11,26.x+,0.0,16.7,5\nQwen2.5-Coder-0.5B,E06,1.17-1.19.4,45.0,21.2,20\nQwen2.5-Coder-0.5B,E07,1.20-1.20.6,0.0,6.7,5\nQwen2.5-Coder-0.5B,E08,1.21-1.21.1,40.0,11.5,20\nQwen2.5-Coder-0.5B,E09,1.21.2-1.21.4,20.0,29.0,5\nQwen2.5-Coder-0.5B,E10,1.21.5+,0.0,28.7,5\nQwen2.5-Coder-0.5B,E11,26.x+,40.0,15.2,5\nMixer-0.6B v1,E06,1.17-1.19.4,0.0,11.1,20\nMixer-0.6B v1,E07,1.20-1.20.6,0.0,0.0,5\nMixer-0.6B v1,E08,1.21-1.21.1,0.0,13.8,20\nMixer-0.6B v1,E09,1.21.2-1.21.4,0.0,0.0,5\nMixer-0.6B v1,E10,1.21.5+,0.0,6.7,5\nMixer-0.6B v1,E11,26.x+,0.0,0.0,5\nMixer-0.6B v2,E06,1.17-1.19.4,0.0,43.2,20\nMixer-0.6B v2,E07,1.20-1.20.6,60.0,26.7,5\nMixer-0.6B v2,E08,1.21-1.21.1,5.0,35.9,20\nMixer-0.6B v2,E09,1.21.2-1.21.4,20.0,38.6,5\nMixer-0.6B v2,E10,1.21.5+,0.0,32.0,5\nMixer-0.6B v2,E11,26.x+,40.0,13.3,5\nMixer-0.5B,E06,1.17-1.19.4,5.0,48.0,20\nMixer-0.5B,E07,1.20-1.20.6,20.0,36.7,5\nMixer-0.5B,E08,1.21-1.21.1,0.0,37.7,20\nMixer-0.5B,E09,1.21.2-1.21.4,40.0,45.2,5\nMixer-0.5B,E10,1.21.5+,20.0,30.7,5\nMixer-0.5B,E11,26.x+,0.0,24.7,5\nDeepSeek flash,E06,1.17-1.19.4,5.0,63.5,20\nDeepSeek flash,E07,1.20-1.20.6,0.0,50.0,5\nDeepSeek flash,E08,1.21-1.21.1,0.0,67.0,20\nDeepSeek flash,E09,1.21.2-1.21.4,0.0,58.1,5\nDeepSeek flash,E10,1.21.5+,0.0,50.0,5\nDeepSeek flash,E11,26.x+,0.0,33.7,5\n", "training": "run,step,eval_loss\nMixer-0.5B,0,1.2703\nMixer-0.5B,60,0.832\nMixer-0.5B,120,0.7891\nMixer-0.5B,180,0.7651\nMixer-0.5B,240,0.7451\nMixer-0.5B,300,0.7304\nMixer-0.5B,360,0.7277\nMixer-0.5B,420,0.7199\nMixer-0.5B,480,0.716\nMixer-0.5B,540,0.7152\nMixer-0.5B,600,0.7147\nMixer-0.5B,625,0.7147\nMixer-0.6B v1,0,1.2485\nMixer-0.6B v1,40,0.9118\nMixer-0.6B v1,80,0.8723\nMixer-0.6B v1,120,0.8464\nMixer-0.6B v1,160,0.844\nMixer-0.6B v1,163,0.8441\nMixer-0.6B v2,0,1.5274\nMixer-0.6B v2,60,1.0091\nMixer-0.6B v2,120,0.9459\nMixer-0.6B v2,180,0.9119\nMixer-0.6B v2,240,0.8827\nMixer-0.6B v2,300,0.8679\nMixer-0.6B v2,360,0.8627\nMixer-0.6B v2,420,0.8491\nMixer-0.6B v2,480,0.8439\nMixer-0.6B v2,540,0.8396\nMixer-0.6B v2,600,0.8385\nMixer-0.6B v2,622,0.8385\n", "models": "model,base,params_b,hardware,train_minutes,epochs,examples,gen_tok_s,gguf_mb\nMixer-0.6B v1,Qwen3-0.6B-Base,0.6,RX 7600,41.9,1,2599,76,610\nMixer-0.6B v2,Huihui-Qwen3-0.6B-abliterated-v2,0.6,RX 7600,133.8,2,4971,100,610\nMixer-0.5B,Qwen2.5-Coder-0.5B-Instruct,0.5,Kaggle 2x T4,77,2,4993,110,506\n", "skill": "run,step,humaneval,modding_total,syntax,real_api,no_leaks,anchors\nMixer-0.6B v2,0,15.2,48.4,76.7,7.1,95.0,15.0\n"};
-    const DATA = Object.fromEntries(Object.entries(RAW).map(([k, csv]) => [k, d3.csvParse(csv)]));
-    const draws = [];
-    window.dash = {
-      colors: ['var(--c1)', 'var(--c2)', 'var(--c3)', 'var(--c4)'],
-      data: (id) => ({ status: DATA[id] ? 'ok' : 'missing', data: DATA[id] || [], message: '', refreshing: false, truncated: false }),
-      draw: (name, fn) => { if (fn) draws.push([name, fn]); else run(name); },
-      onData: (fn) => fn(), params: () => ({}), setParams() {}, resetParams() {}, setLink() {}, refresh() {},
-    };
-    function run(only) {
-      draws.forEach(([name, fn]) => {
-        if (only && name !== only) return;
-        document.querySelectorAll(`[data-draw="${name}"]`).forEach((el) => {
-          try { fn(el); } catch (e) { console.error(name, e); }
-        });
-      });
-    }
-    let w = 0, t = 0;
-    window.addEventListener('DOMContentLoaded', () => { run(); w = innerWidth; });
-    window.addEventListener('resize', () => { if (innerWidth === w) return; w = innerWidth; clearTimeout(t); t = setTimeout(() => run(), 120); });
-  })();
-</script>
 </head>
 <body>
-<div id="dash-root">
-<style>
-  /* Сайт Mixer: шапка с сеткой «блоков», дальше узкая колонка разделов. */
-  .mz { display: flex; flex-direction: column; gap: 56px; margin-bottom: 56px; }
-  .mz-hero { position: relative; border: 1px solid var(--color-border-line); border-radius: 16px; overflow: hidden;
-             background:
-               linear-gradient(180deg, transparent 55%, var(--color-bg) 100%),
-               repeating-linear-gradient(0deg, color-mix(in srgb, var(--color-border-line) 55%, transparent) 0 1px, transparent 1px 28px),
-               repeating-linear-gradient(90deg, color-mix(in srgb, var(--color-border-line) 55%, transparent) 0 1px, transparent 1px 28px),
-               var(--color-panel); }
-  .mz-hero-in { padding: 44px clamp(18px, 5vw, 48px) 36px; display: flex; flex-direction: column; gap: 18px; }
-  .mz-eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-fg-muted); }
-  .mz-name { font-family: var(--font-anthropic-serif); font-weight: 500; font-size: clamp(52px, 11vw, 92px); line-height: .95;
-             margin: 0; letter-spacing: -.02em; }
-  .mz-name span { color: var(--c1); }
-  .mz-tag { font-size: clamp(17px, 2.4vw, 21px); line-height: 1.45; margin: 0; max-width: 34em; text-wrap: balance; }
-  .mz-code { font-family: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 13.5px;
-             background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 8px;
-             padding: 10px 12px; overflow-x: auto; white-space: pre; margin: 0; color: var(--color-fg); }
-  .mz-code b { color: var(--c1); font-weight: 600; }
-  .mz-cta { display: flex; flex-wrap: wrap; gap: 10px; }
-  .mz-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 9px; text-decoration: none;
-            border: 1px solid var(--color-border-line); color: var(--color-fg); background: var(--color-bg); font-weight: 500; }
-  .mz-btn:hover { border-color: var(--c1); }
-  .mz-btn:focus-visible, .mz-copy:focus-visible { outline: 2px solid var(--c1); outline-offset: 2px; }
-  .mz-btn-main { background: var(--c1); border-color: var(--c1); color: #fff; }
-  .mz-btn-main:hover { filter: brightness(1.08); }
-  .mz-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; margin-top: 8px;
-              background: var(--color-border-line); border: 1px solid var(--color-border-line); border-radius: 10px; overflow: hidden; }
-  .mz-stat { background: var(--color-panel); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
-  .mz-stat b { font-family: var(--font-anthropic-serif); font-weight: 500; font-size: 28px; font-variant-numeric: tabular-nums; }
-  .mz-stat span { color: var(--color-fg-muted); font-size: 13px; line-height: 1.35; }
-  .mz-sec { display: flex; flex-direction: column; gap: 16px; }
-  .mz-sec > h2 { font-family: var(--font-anthropic-serif); font-weight: 500; font-size: 28px; margin: 0; }
-  .mz-sec > p { margin: 0; line-height: 1.6; max-width: 68ch; color: var(--color-fg-muted); }
-  .mz-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: s; }
-  .mz-steps li { counter-increment: s; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; min-width: 0; }
-  .mz-steps li::before { content: counter(s); width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center;
-                         background: var(--color-panel); border: 1px solid var(--color-border-line); font-weight: 600; font-size: 13px; }
-  .mz-steps li > div { display: block; min-width: 0; padding-top: 4px; line-height: 1.55; }
-  .mz-cmd { display: flex; gap: 8px; align-items: stretch; min-width: 0; margin: 8px 0; }
-  .mz-cmd .mz-code { flex: 1; min-width: 0; }
-  .mz-copy { border: 1px solid var(--color-border-line); background: var(--color-panel); color: var(--color-fg); border-radius: 8px;
-             padding: 0 12px; cursor: pointer; font: inherit; font-size: 13px; }
-  .mz-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-  .mz-card { border: 1px solid var(--color-border-line); border-radius: 12px; background: var(--color-panel); padding: 18px;
-             display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-  .mz-card h3 { margin: 0; font-size: 16px; }
-  .mz-card p, .mz-card li { margin: 0; color: var(--color-fg-muted); line-height: 1.55; font-size: 14px; }
-  .mz-card ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
-  .mz-tbl { overflow-x: auto; }
-  .mz-tbl table { border-collapse: collapse; width: 100%; font-size: 14px; }
-  .mz-tbl th, .mz-tbl td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
-  .mz-tbl th { color: var(--color-fg-muted); font-weight: 600; white-space: nowrap; }
-  .mz-tbl td:first-child { white-space: nowrap; }
-  .mz-tbl code { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: 13px; color: var(--c1); }
-  .mz-res-head { display: flex; flex-direction: column; gap: 8px; }
-  .mz-res-head h2 { font-family: var(--font-anthropic-serif); font-weight: 500; font-size: 28px; margin: 0; }
-  @media (prefers-reduced-motion: no-preference) { .mz-btn { transition: border-color .15s ease, filter .15s ease; } }
-</style>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="wrap">
 
-<div class="mz">
-  <section class="mz-hero" id="about">
-    <div class="mz-hero-in">
-      <span class="mz-eyebrow">Локальная модель · 0,5 млрд параметров · llama.cpp и LM Studio</span>
-      <h1 class="mz-name">Mix<span>er</span></h1>
-      <p class="mz-tag">Маленькая модель, которая пишет моды, рендер и миксины для Minecraft на Java — под конкретную версию игры, загрузчик и маппинги.</p>
-      <pre class="mz-code"><b>[MC=1.21.4][LOADER=fabric][MAP=yarn][JAVA=21]</b>
-Сделай клиентский HUD, который рисует FPS и координаты игрока.</pre>
-      <div class="mz-cta">
-        <a class="mz-btn mz-btn-main" href="https://github.com/Ma3stro567/mixer/releases">Скачать Mixer-0.5B · GGUF Q8_0</a>
-        <a class="mz-btn" href="#run">Как запустить</a>
-        <a class="mz-btn" href="#results">Результаты</a>
-      </div>
-      <div class="mz-stats">
-        <div class="mz-stat"><b data-draw="v" data-source="modding" data-field="total" data-where="model=Mixer-0.5B">—</b><span>итог по моддингу (основа без обучения — <i data-draw="v" data-source="modding" data-field="total" data-where="model=Qwen2.5-Coder-0.5B">—</i>)</span></div>
-        <div class="mz-stat"><b data-draw="v" data-source="modding" data-field="real_api" data-where="model=Mixer-0.5B">—</b><span>импортов Minecraft — настоящие, не выдуманные</span></div>
-        <div class="mz-stat"><b data-draw="v" data-source="humaneval" data-field="pass_at_1" data-where="model=Mixer-0.5B">—</b><span>задач HumanEval-Java решено с тестами</span></div>
-        <div class="mz-stat"><b data-draw="v" data-source="models" data-field="gen_tok_s" data-where="model=Mixer-0.5B">—</b><span>на AMD RX 7600 в llama.cpp</span></div>
+  <header class="hero" id="top">
+    <div>
+      <h1>Mixer</h1>
+      <p>Локальные модели, которые пишут моды, рендер и миксины для Minecraft на Java под нужную версию игры.
+        Mixer-0.5B использует настоящие классы Minecraft в <b data-v="ratio-api">—</b> раза чаще, чем исходная Qwen, а её итог по моддингу —
+        <b data-v="mod:Mixer-0.5B:total">—</b> против <b data-v="mod:Qwen2.5-Coder-0.5B:total">—</b>.</p>
+      <div class="cta">
+        <a class="btn main" href="https://github.com/Ma3stro567/mixer/releases">Скачать</a>
+        <a class="btn" href="#run">Как запустить</a>
       </div>
     </div>
-  </section>
-
-  <section class="mz-sec" id="run">
-    <h2>Как запустить</h2>
-    <ol class="mz-steps">
-      <li><div>Скачайте <b>Mixer-0.5B-Q8_0.gguf</b> (506 МБ) со страницы <a href="https://github.com/Ma3stro567/mixer/releases">Releases</a>.</div></li>
-      <li><div>Запустите сервер llama.cpp (подойдёт сборка с Vulkan для AMD и NVIDIA) и откройте http://127.0.0.1:8080:
-        <div class="mz-cmd"><pre class="mz-code" id="cmd-server">llama-server -m Mixer-0.5B-Q8_0.gguf -ngl 99 -c 8192 --jinja --temp 0.2 --repeat-penalty 1.1</pre><button class="mz-copy" type="button" data-copy="cmd-server">Копировать</button></div>
-        Или откройте файл в LM Studio: температура 0,2, штраф за повторы 1,1.</div></li>
-      <li><div>Первой строкой системного промпта укажите цель — модель учили только с ним:
-        <div class="mz-cmd"><pre class="mz-code" id="cmd-tag">[MC=1.21.4][LOADER=fabric][MAP=yarn][JAVA=21]
-Пиши код строго под эту цель. API других версий не используй.</pre><button class="mz-copy" type="button" data-copy="cmd-tag">Копировать</button></div></div></li>
-      <li><div>Пишите задачу обычными словами, можно по-русски. Модель сначала рассуждает в блоке &lt;think&gt; — какие классы нужны для этой версии, — потом пишет код.</div></li>
-    </ol>
-    <div class="mz-tbl">
-      <table>
-        <thead><tr><th>Поле тега</th><th>Значения</th><th>Пояснение</th></tr></thead>
-        <tbody>
-          <tr><td><code>MC</code></td><td>1.16.5, 1.18.2, 1.19.4, 1.20.1, 1.21.1, 1.21.4, 1.21.11, 26.3 …</td><td>Точная версия игры. Модель учили на версиях от 1.16 до 26.x.</td></tr>
-          <tr><td><code>LOADER</code></td><td>fabric, forge, neoforge, quilt, common, none</td><td>none — MCP-клиенты без загрузчика; common — общий код multi-loader проектов.</td></tr>
-          <tr><td><code>MAP</code></td><td>yarn, mojmap, mcp, official</td><td>Имена классов: Yarn (Fabric), Mojmap (NeoForge и Forge 1.17+), MCP (до 1.16.5), official (26.x без обфускации).</td></tr>
-          <tr><td><code>JAVA</code></td><td>8, 17, 21</td><td>8 — до 1.16.5, 17 — 1.17–1.20.4, 21 — 1.20.5 и новее.</td></tr>
-        </tbody>
-      </table>
+    <div class="mark" aria-hidden="true">
+      <!-- изометрический блок из трёх граней с вырезом — знак Mixer -->
+      <svg viewBox="0 0 200 200">
+        <polygon points="100,22 172,62 100,102 28,62" fill="#3a3a3e"/>
+        <polygon points="28,62 100,102 100,182 28,142" fill="#2b2b2e"/>
+        <polygon points="172,62 100,102 100,182 172,142" fill="#232326"/>
+        <polygon points="100,46 136,66 100,86 64,66" fill="#161617"/>
+        <polygon points="64,66 100,86 100,104 64,84" fill="#1c1c1e"/>
+        <polygon points="136,66 100,86 100,104 136,84" fill="#19191b"/>
+      </svg>
     </div>
-  </section>
-
-  <section class="mz-sec" id="inside">
-    <h2>Как её делали</h2>
-    <div class="mz-grid2">
-      <div class="mz-card">
-        <h3>Данные</h3>
-        <ul>
-          <li>Исходники около 400 открытых модов с GitHub и Modrinth, только версии от 1.16.</li>
-          <li>77 136 классов с точной меткой версии, загрузчика и маппингов; дубли и автоген удалены.</li>
-          <li>1 974 задачи к настоящему коду: формулировка и рассуждение, код в примерах — из реальных модов.</li>
-          <li>2 500 задач по общей Java и 530 обычных диалогов, чтобы модель не разучилась разговаривать.</li>
-        </ul>
-      </div>
-      <div class="mz-card">
-        <h3>Обучение</h3>
-        <ul>
-          <li>Основа — Qwen2.5-Coder-0.5B-Instruct: на маленьком размере кодовая модель заметно сильнее общей.</li>
-          <li>LoRA r=32, около 20 млн обучаемых параметров, 2 эпохи по 4 993 примерам.</li>
-          <li>Две видеокарты T4 на Kaggle, 77 минут.</li>
-          <li>Проверка без ИИ-судьи: синтаксис, реальность импортов, утечки версий, HumanEval-Java с тестами.</li>
-        </ul>
-      </div>
-      <div class="mz-card">
-        <h3>Ограничения</h3>
-        <ul>
-          <li>Это 0,5 млрд параметров: код — хорошая заготовка, а не готовый мод. Задачи целиком решает редко.</li>
-          <li>Иногда путает версии — чаще всего на 1.20.x и 1.21.2–1.21.4 — и вставляет классы из чужих модов.</li>
-          <li>На общей Java прироста над основой нет: 36,7% против 39,2% на HumanEval-Java, в пределах погрешности.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="mz-res-head" id="results">
-    <h2>Результаты</h2>
-    <p class="mx-sub">Все модели запускались одинаково: llama.cpp, файлы Q8_0, температура 0. Бенчмарк по моддингу — задачи из модов, которых модели не видели при обучении.</p>
-  </section>
-</div>
-
-<script>
-  document.querySelectorAll('.mz-copy').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const el = document.getElementById(btn.dataset.copy);
-      if (!el) return;
-      try { await navigator.clipboard.writeText(el.textContent); btn.textContent = 'Скопировано'; }
-      catch (e) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Выделено'; }
-      setTimeout(() => { btn.textContent = 'Копировать'; }, 1600);
-    });
-  });
-</script>
-
-<style>
-  .mx { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
-  .mx h1.mx-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
-  .mx h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
-  .mx p { margin: 0; line-height: 1.5; max-width: 68ch; }
-  .mx-lede { font-size: var(--cds-font-size-body); }
-  .mx-sub { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
-  .mx-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
-  .mx-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--cds-gap-md); }
-  .mx-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius);
-             padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
-  .mx-tile .mx-k { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); letter-spacing: .02em; }
-  .mx-tile .mx-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title);
-                     font-variant-numeric: tabular-nums; line-height: 1.1; }
-  .mx-tile .mx-cmp { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
-  .mx-sec { display: flex; flex-direction: column; gap: var(--cds-gap-md); min-width: 0; }
-  .mx-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
-  .mx-legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .mx-sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-  .mx-chart { position: relative; min-height: 220px; min-width: 0; }
-  .mx-bars { display: flex; flex-direction: column; gap: 10px; }
-  .mx-row { display: grid; grid-template-columns: minmax(110px, 30%) 1fr 64px; align-items: center; gap: var(--cds-gap-sm); }
-  .mx-row .mx-name { font-size: var(--cds-font-size-caption); overflow-wrap: anywhere; }
-  .mx-track { height: 18px; background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 4px; overflow: hidden; display: flex; }
-  .mx-fill { height: 100%; }
-  .mx-val { font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-caption); text-align: right; }
-  .mx-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border);
-            box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 8px 10px; font-size: var(--cds-font-size-caption);
-            color: var(--color-fg); z-index: 5; max-width: 260px; line-height: 1.45; font-variant-numeric: tabular-nums; }
-  .mx-tip b { font-weight: var(--cds-font-weight-medium); }
-  .mx-tip .mx-tk { color: var(--cds-text-secondary); }
-  .mx-wrap { overflow-x: auto; }
-  .mx table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
-  .mx th, .mx td { padding: 7px 10px; border-bottom: 1px solid var(--color-border-line); text-align: right; white-space: nowrap; }
-  .mx th:first-child, .mx td:first-child { text-align: left; }
-  .mx th { color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
-  .mx td.mx-strong { font-weight: var(--cds-font-weight-medium); }
-  .mx-pill { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px; border: 1px solid var(--color-border-line); color: var(--color-fg-muted); margin-left: 6px; }
-  .mx-heat { display: grid; gap: 3px; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
-  .mx-heat .mx-h { color: var(--color-fg-muted); text-align: center; padding: 4px 2px; font-size: 11px; }
-  .mx-heat .mx-rn { padding: 6px 4px; overflow-wrap: anywhere; }
-  .mx-heat .mx-c { text-align: center; padding: 6px 2px; border-radius: 3px; border: 1px solid var(--color-border-line); }
-  .mx-loss svg text { fill: var(--cds-text-secondary); font-size: 11px; }
-  .mx details { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-md); }
-  .mx details summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
-  .mx dl { display: grid; grid-template-columns: minmax(130px, 22%) 1fr; gap: 8px 16px; margin: var(--cds-gap-md) 0 0; }
-  .mx dt { font-weight: var(--cds-font-weight-medium); }
-  .mx dd { margin: 0; color: var(--color-fg-muted); line-height: 1.5; }
-  [data-dash-source-state=refreshing] { opacity: .5; }
-  @media (max-width: 520px) { .mx-row { grid-template-columns: 1fr 56px; } .mx-row .mx-name { grid-column: 1 / -1; } .mx dl { grid-template-columns: 1fr; } }
-</style>
-
-<div class="mx">
-  <header class="mx-head" id="top">
-    
-    <p class="mx-lede" data-read lang="ru">По моддингу Minecraft лучшая из наших моделей — Mixer-0.5B: итог
-      <b data-draw="v" data-source="modding" data-field="total" data-where="model=Mixer-0.5B">—</b>
-      против <b data-draw="v" data-source="modding" data-field="total" data-where="model=Qwen2.5-Coder-0.5B">—</b>
-      у той же Qwen2.5-Coder-0.5B без обучения. На общей Java (HumanEval-Java) у Mixer-0.5B
-      <b data-draw="v" data-source="humaneval" data-field="pass_at_1" data-where="model=Mixer-0.5B">—</b>
-      решённых задач, у основы <b data-draw="v" data-source="humaneval" data-field="pass_at_1" data-where="model=Qwen2.5-Coder-0.5B">—</b>.</p>
-    <p class="mx-sub" data-read lang="ru">Все проверки автоматические, без ИИ-судьи. Моддинг — 60 задач из модов, которых модели не видели при обучении; HumanEval-Java — 158 задач с тестами. Запуск через llama.cpp на RX 7600, файлы Q8_0.</p>
   </header>
 
-  
-
-  <section class="mx-sec" id="modding">
-    <h2>Моддинг Minecraft: итог по моделям</h2>
-    <p class="mx-sub" data-read lang="ru">Итог — среднее четырёх проверок: синтаксис Java, реальные импорты, без утечек версий и якоря. Наведите на строку, чтобы увидеть все четыре.</p>
-    <div class="mx-legend" aria-hidden="true">
-      <span><i class="mx-sw" data-kind="Mixer"></i>Mixer (наше обучение)</span>
-      <span><i class="mx-sw" data-kind="основа"></i>основа без обучения</span>
-      <span><i class="mx-sw" data-kind="ориентир"></i>облачный ориентир</span>
-    </div>
-    <div class="mx-chart" id="mod-chart" data-draw="mod-bars" data-source="modding" role="img" aria-label="Итог бенчмарка по моддингу для каждой модели, в процентах"></div>
-    <div class="mx-wrap">
-      <table id="mod-table" data-source="modding" data-row-key="model">
-        <thead><tr>
-          <th data-field="model">Модель</th>
-          <th data-field="total">Итог</th>
-          <th data-field="syntax">Синтаксис Java</th>
-          <th data-field="real_api">Реальные импорты</th>
-          <th data-field="no_leaks">Без утечек версий</th>
-          <th data-field="anchors">Якоря</th>
-          <th data-field="sec_per_task">Сек/задача</th>
-        </tr></thead>
-        <tbody data-draw="mod-rows"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="mx-sec" id="humaneval">
-    <h2>HumanEval-Java: доля решённых задач</h2>
-    <p class="mx-sub" data-read lang="ru">Модель дописывает тело метода, код компилируется javac и проверяется тестами с assert. Засчитано — только если все тесты прошли.</p>
-    <div class="mx-legend" aria-hidden="true">
-      <span><i class="mx-sw" data-st="pass"></i>решено</span>
-      <span><i class="mx-sw" data-st="fail"></i>тесты упали</span>
-      <span><i class="mx-sw" data-st="compile"></i>не скомпилировалось</span>
-    </div>
-    <div class="mx-chart" id="he-chart" data-draw="he-bars" data-source="humaneval" role="img" aria-label="Доля решённых, упавших и не скомпилированных задач HumanEval-Java по моделям"></div>
-    <div class="mx-wrap">
-      <table id="he-table" data-source="humaneval" data-row-key="model">
-        <thead><tr>
-          <th data-field="model">Модель</th>
-          <th data-field="pass_at_1">pass@1</th>
-          <th data-field="compile_error">Не скомпилировалось</th>
-          <th data-field="tests_failed">Тесты упали</th>
-          <th data-field="tasks">Задач</th>
-        </tr></thead>
-        <tbody data-draw="he-rows"></tbody>
-      </table>
+  <section id="models">
+    <h2>Какую модель выбрать</h2>
+    <div class="cards">
+      <article class="card" id="card-05">
+        <h3>Mixer-0.5B</h3>
+        <div class="spec">0,5B параметров · Q8_0 · <span data-v="size:Mixer-0.5B">—</span> · основа Qwen2.5-Coder</div>
+        <p class="use">Рендер, HUD и миксины для любой версии от 1.16 до 26.x. Лучший выбор на слабом железе.</p>
+        <div class="metric big" data-metric="mod" data-model="Mixer-0.5B" data-base="Qwen2.5-Coder-0.5B" data-field="total"><div class="k">Моддинг Minecraft</div></div>
+        <div class="metric small" data-metric="he" data-model="Mixer-0.5B" data-base="Qwen2.5-Coder-0.5B" data-field="pass_at_1"><div class="k">HumanEval-Java</div></div>
+        <div class="dl"><a href="https://github.com/Ma3stro567/mixer/releases">Mixer-0.5B-Q8_0.gguf</a></div>
+      </article>
+      <article class="card" id="card-06">
+        <h3>Mixer-0.6B v2</h3>
+        <div class="spec">0,6B параметров · Q8_0 · <span data-v="size:Mixer-0.6B v2">—</span> · основа Qwen3 без отказов</div>
+        <p class="use">Рассуждает перед кодом в блоке &lt;think&gt; и не отказывается от задач. Чуть слабее в общей Java.</p>
+        <div class="metric big" data-metric="mod" data-model="Mixer-0.6B v2" data-base="Qwen3-0.6B abliterated" data-field="total"><div class="k">Моддинг Minecraft</div></div>
+        <div class="metric small" data-metric="he" data-model="Mixer-0.6B v2" data-base="Qwen3-0.6B abliterated" data-field="pass_at_1"><div class="k">HumanEval-Java</div></div>
+        <div class="dl"><a href="https://github.com/Ma3stro567/mixer/releases">Mixer-0.6B-v2-Q8_0.gguf</a></div>
+      </article>
+      <article class="card soon" id="card-15">
+        <h3>Mixer-1.5B</h3>
+        <div class="spec">1,5B параметров · основа Qwen2.5-Coder</div>
+        <p class="use">Отдельные версии под конкретную версию игры — для задач посложнее.</p>
+        <div class="note">Скоро</div>
+      </article>
     </div>
   </section>
 
-  <section class="mx-sec" id="eras">
-    <h2>Утечки версий по эпохам</h2>
-    <p class="mx-sub" data-read lang="ru">Доля ответов с кодом, где есть импорт чужих маппингов или чужой версии. Меньше — лучше. В отложенном наборе по эпохам от 5 до 42 задач, поэтому малые эпохи шумные.</p>
-    <div class="mx-chart" id="era-chart" data-draw="era-heat" data-source="eras" role="img" aria-label="Тепловая карта утечек версий по моделям и эпохам Minecraft"></div>
+  <section id="run">
+    <h2>Как запустить</h2>
+    <div class="run">
+      <div class="cmd"><pre id="c1">llama-server -m Mixer-0.5B-Q8_0.gguf -ngl 99 -c 8192 --jinja --temp 0.2 --repeat-penalty 1.1</pre><button type="button" data-copy="c1">Копировать</button></div>
+      <p>Подходит llama.cpp с Vulkan (AMD и NVIDIA) или LM Studio. Чат откроется на 127.0.0.1:8080.</p>
+      <div class="cmd"><pre id="c2"><span class="t">[MC=1.21.4][LOADER=fabric][MAP=yarn][JAVA=21]</span>
+Пиши код строго под эту цель. API других версий не используй.</pre><button type="button" data-copy="c2">Копировать</button></div>
+      <p>Первая строка системного промпта — цель. <code>MC</code> — версия игры, <code>LOADER</code> — fabric, forge, neoforge или none,
+        <code>MAP</code> — yarn, mojmap, mcp или official, <code>JAVA</code> — 8, 17 или 21.</p>
+    </div>
   </section>
 
-  <section class="mx-sec" id="training">
-    <h2>Обучение: ошибка на проверочных примерах</h2>
-    <p class="mx-sub" data-read lang="ru">Eval loss по шагам обучения. Шаг 0 — модель до обучения. Чем ниже, тем лучше модель предсказывает настоящие ответы.</p>
-    <div class="mx-chart mx-loss" id="loss-chart" data-draw="loss" data-source="training" role="img" aria-label="Ошибка на проверочных примерах по шагам обучения для трёх версий Mixer"></div>
-  </section>
-
-    <section class="mx-sec" id="skill">
+  <section id="skill">
     <h2>Ум по ходу обучения</h2>
-    <p class="mx-sub" data-read lang="ru">Каждая точка — промежуточная версия модели, проверенная теми же бенчмарками. Шаг 0 — основа до обучения. Слева общая Java (HumanEval-Java, доля решённых задач), справа итог по моддингу.</p>
-    <div class="mx-skill-grid">
-      <div class="mx-chart mx-loss" id="skill-he" data-draw="skill" data-metric="humaneval" data-title="HumanEval-Java, %" data-source="skill" role="img" aria-label="Доля решённых задач HumanEval-Java по шагам обучения"></div>
-      <div class="mx-chart mx-loss" id="skill-mod" data-draw="skill" data-metric="modding_total" data-title="Моддинг, итог, %" data-source="skill" role="img" aria-label="Итог бенчмарка по моддингу по шагам обучения"></div>
+    <p class="sub">Каждая точка — промежуточная версия модели, проверенная теми же тестами. Шаг 0 — основа до обучения.</p>
+    <div class="charts">
+      <div class="chart"><h4>Моддинг Minecraft, итог</h4><div data-curve="modding_total"></div></div>
+      <div class="chart"><h4>HumanEval-Java, решено задач</h4><div data-curve="humaneval"></div></div>
     </div>
   </section>
-  <style>
-    .mx-skill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--cds-gap-lg); }
-    .mx-skill-empty { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: 24px 0; }
-  </style>
-  
-  <section class="mx-sec" id="models">
-    <h2>Модели</h2>
-    <div class="mx-wrap">
-      <table id="models-table" data-source="models" data-row-key="model">
-        <thead><tr>
-          <th data-field="model">Модель</th>
-          <th data-field="base">Основа</th>
-          <th data-field="params_b">Параметров, млрд</th>
-          <th data-field="hardware">Где учили</th>
-          <th data-field="train_minutes">Время</th>
-          <th data-field="epochs">Эпох</th>
-          <th data-field="examples">Примеров</th>
-          <th data-field="gen_tok_s">Скорость</th>
-          <th data-field="gguf_mb">Q8_0, МБ</th>
-        </tr></thead>
-        <tbody data-draw="models-rows"></tbody>
+
+  <section id="compare">
+    <h2>Сравнение</h2>
+    <p class="sub">60 задач по моддингу из модов, которых модели не видели, и 158 задач HumanEval-Java с тестами. Проверки автоматические, без ИИ-судьи.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Модель</th><th>Моддинг</th><th>Реальные импорты</th><th>Без утечек версий</th><th>HumanEval-Java</th></tr></thead>
+        <tbody id="cmp"></tbody>
       </table>
     </div>
   </section>
 
-  <details id="defs">
-    <summary>Как считаются метрики</summary>
-    <dl>
-      <dt>Синтаксис Java</dt><dd>Доля ответов, чей код разбирается как корректная Java (парсер tree-sitter). Ответ без кода — провал.</dd>
-      <dt>Реальные импорты</dt><dd>Доля импортов Minecraft, Fabric, Forge, NeoForge и Mixin в ответе, которые существуют на самом деле. Сверка с 10 974 импортами из 77 тысяч классов настоящих модов. Ловит выдуманные пакеты вроде org.fabricmc.client.</dd>
-      <dt>Без утечек версий</dt><dd>Доля ответов с кодом, где нет импортов чужих маппингов (Yarn, Mojmap, MCP) и классов из других эпох, например MatrixStack из 1.16 в коде под 1.21.4.</dd>
-      <dt>Якоря</dt><dd>Какая доля ключевых классов и методов настоящего решения есть в ответе.</dd>
-      <dt>Итог</dt><dd>Среднее синтаксиса, реальных импортов, отсутствия утечек и якорей.</dd>
-      <dt>pass@1</dt><dd>HumanEval-Java (MultiPL-E): одна попытка, жадная генерация, засчитывается только при прохождении всех тестов.</dd>
-    </dl>
-  </details>
+  <footer>
+    Модели запускались одинаково: llama.cpp, Q8_0, температура 0. Исходные таблицы — в папке <a href="data/">data</a>.
+  </footer>
 </div>
 
 <script>
 (function () {
-  const PCT = new Set(['total', 'syntax', 'real_api', 'no_leaks', 'anchors', 'has_code', 'pass_at_1', 'compile_error', 'tests_failed', 'leak']);
-  function fmt(f, v) {
-    if (v === null || v === undefined || v === '') return '—';
-    const n = +v;
-    if (Number.isNaN(n)) return String(v);
-    const dec = (x, d) => x.toFixed(d).replace('.', ',');
-    if (PCT.has(f)) return dec(n, 1) + '%';
-    if (f === 'gen_tok_s') return n + ' ток/с';
-    if (f === 'train_minutes') return dec(n, n % 1 ? 1 : 0) + ' мин';
-    if (f === 'sec_per_task') return dec(n, 1) + ' с';
-    if (f === 'params_b') return dec(n, 1);
-    if (f === 'gguf_mb') return n.toLocaleString('ru-RU') + ' МБ';
-    return n.toLocaleString('ru-RU');
-  }
-  function pick(rows, where) {
-    if (!where) return rows[0];
-    const i = where.indexOf('=');
-    const k = where.slice(0, i), val = decodeURIComponent(where.slice(i + 1));
-    return rows.find((r) => String(r[k]) === val);
-  }
-  function kindColor(kind) {
-    if (kind === 'Mixer') return dash.colors[0];
-    if (kind === 'ориентир') return dash.colors[1];
-    return 'var(--cds-chart-muted)';
-  }
-  const ST = { pass: 'var(--color-ok)', fail: 'var(--color-warn)', compile: 'var(--color-bad)' };
-  window.mx = { fmt, pick, kindColor, ST };
+  const RAW = {"modding": "model,kind,tasks,total,syntax,real_api,no_leaks,anchors,has_code,sec_per_task\nQwen3-0.6B,основа,60,50.1,80.0,5.9,100.0,14.5,100.0,9.8\nQwen3-0.6B abliterated,основа,60,48.4,76.7,7.1,95.0,15.0,100.0,11.8\nQwen2.5-Coder-0.5B,основа,60,46.1,68.3,31.9,66.7,17.5,100.0,10.6\nMixer-0.6B v1,Mixer,60,12.2,11.7,13.3,15.0,8.8,15.0,26.8\nMixer-0.6B v2,Mixer,60,70.5,75.0,83.2,88.3,35.6,100.0,9.3\nMixer-0.5B,Mixer,60,72.6,73.3,87.1,90.0,40.0,98.3,9.9\nDeepSeek flash,ориентир,60,86.5,90.0,98.3,98.3,59.5,100.0,6.4\n", "humaneval": "model,kind,tasks,pass_at_1,compile_error,tests_failed,timeout\nQwen3-0.6B,основа,158,16.5,55.7,27.8,0\nQwen3-0.6B abliterated,основа,158,15.2,51.9,32.3,1\nQwen2.5-Coder-0.5B,основа,158,39.2,29.1,31.6,0\nMixer-0.6B v1,Mixer,158,22.2,25.3,52.5,0\nMixer-0.6B v2,Mixer,158,25.3,31.6,43.0,0\nMixer-0.5B,Mixer,158,36.7,21.5,41.8,0\n", "eras": "model,era,versions,leak,anchors,tasks\nQwen3-0.6B,E06,1.17-1.19.4,0.0,11.6,20\nQwen3-0.6B,E07,1.20-1.20.6,0.0,10.0,5\nQwen3-0.6B,E08,1.21-1.21.1,0.0,13.5,20\nQwen3-0.6B,E09,1.21.2-1.21.4,0.0,25.2,5\nQwen3-0.6B,E10,1.21.5+,0.0,18.0,5\nQwen3-0.6B,E11,26.x+,0.0,20.0,5\nQwen3-0.6B abliterated,E06,1.17-1.19.4,15.0,13.5,20\nQwen3-0.6B abliterated,E07,1.20-1.20.6,0.0,6.7,5\nQwen3-0.6B abliterated,E08,1.21-1.21.1,0.0,14.5,20\nQwen3-0.6B abliterated,E09,1.21.2-1.21.4,0.0,15.7,5\nQwen3-0.6B abliterated,E10,1.21.5+,0.0,28.7,5\nQwen3-0.6B abliterated,E11,26.x+,0.0,16.7,5\nQwen2.5-Coder-0.5B,E06,1.17-1.19.4,45.0,21.2,20\nQwen2.5-Coder-0.5B,E07,1.20-1.20.6,0.0,6.7,5\nQwen2.5-Coder-0.5B,E08,1.21-1.21.1,40.0,11.5,20\nQwen2.5-Coder-0.5B,E09,1.21.2-1.21.4,20.0,29.0,5\nQwen2.5-Coder-0.5B,E10,1.21.5+,0.0,28.7,5\nQwen2.5-Coder-0.5B,E11,26.x+,40.0,15.2,5\nMixer-0.6B v1,E06,1.17-1.19.4,0.0,11.1,20\nMixer-0.6B v1,E07,1.20-1.20.6,0.0,0.0,5\nMixer-0.6B v1,E08,1.21-1.21.1,0.0,13.8,20\nMixer-0.6B v1,E09,1.21.2-1.21.4,0.0,0.0,5\nMixer-0.6B v1,E10,1.21.5+,0.0,6.7,5\nMixer-0.6B v1,E11,26.x+,0.0,0.0,5\nMixer-0.6B v2,E06,1.17-1.19.4,0.0,43.2,20\nMixer-0.6B v2,E07,1.20-1.20.6,60.0,26.7,5\nMixer-0.6B v2,E08,1.21-1.21.1,5.0,35.9,20\nMixer-0.6B v2,E09,1.21.2-1.21.4,20.0,38.6,5\nMixer-0.6B v2,E10,1.21.5+,0.0,32.0,5\nMixer-0.6B v2,E11,26.x+,40.0,13.3,5\nMixer-0.5B,E06,1.17-1.19.4,5.0,48.0,20\nMixer-0.5B,E07,1.20-1.20.6,20.0,36.7,5\nMixer-0.5B,E08,1.21-1.21.1,0.0,37.7,20\nMixer-0.5B,E09,1.21.2-1.21.4,40.0,45.2,5\nMixer-0.5B,E10,1.21.5+,20.0,30.7,5\nMixer-0.5B,E11,26.x+,0.0,24.7,5\nDeepSeek flash,E06,1.17-1.19.4,5.0,63.5,20\nDeepSeek flash,E07,1.20-1.20.6,0.0,50.0,5\nDeepSeek flash,E08,1.21-1.21.1,0.0,67.0,20\nDeepSeek flash,E09,1.21.2-1.21.4,0.0,58.1,5\nDeepSeek flash,E10,1.21.5+,0.0,50.0,5\nDeepSeek flash,E11,26.x+,0.0,33.7,5\n", "training": "run,step,eval_loss\nMixer-0.5B,0,1.2703\nMixer-0.5B,60,0.832\nMixer-0.5B,120,0.7891\nMixer-0.5B,180,0.7651\nMixer-0.5B,240,0.7451\nMixer-0.5B,300,0.7304\nMixer-0.5B,360,0.7277\nMixer-0.5B,420,0.7199\nMixer-0.5B,480,0.716\nMixer-0.5B,540,0.7152\nMixer-0.5B,600,0.7147\nMixer-0.5B,625,0.7147\nMixer-0.6B v1,0,1.2485\nMixer-0.6B v1,40,0.9118\nMixer-0.6B v1,80,0.8723\nMixer-0.6B v1,120,0.8464\nMixer-0.6B v1,160,0.844\nMixer-0.6B v1,163,0.8441\nMixer-0.6B v2,0,1.5274\nMixer-0.6B v2,60,1.0091\nMixer-0.6B v2,120,0.9459\nMixer-0.6B v2,180,0.9119\nMixer-0.6B v2,240,0.8827\nMixer-0.6B v2,300,0.8679\nMixer-0.6B v2,360,0.8627\nMixer-0.6B v2,420,0.8491\nMixer-0.6B v2,480,0.8439\nMixer-0.6B v2,540,0.8396\nMixer-0.6B v2,600,0.8385\nMixer-0.6B v2,622,0.8385\n", "models": "model,base,params_b,hardware,train_minutes,epochs,examples,gen_tok_s,gguf_mb\nMixer-0.6B v1,Qwen3-0.6B-Base,0.6,RX 7600,41.9,1,2599,76,610\nMixer-0.6B v2,Huihui-Qwen3-0.6B-abliterated-v2,0.6,RX 7600,133.8,2,4971,100,610\nMixer-0.5B,Qwen2.5-Coder-0.5B-Instruct,0.5,Kaggle 2x T4,77,2,4993,110,506\n", "skill": "run,step,humaneval,modding_total,syntax,real_api,no_leaks,anchors\nMixer-0.6B v2,0,15.2,48.4,76.7,7.1,95.0,15.0\n"};
+  const D = Object.fromEntries(Object.entries(RAW).map(([k, csv]) => [k, csv ? d3.csvParse(csv) : []]));
+  const row = (set, model) => D[set].find((r) => r.model === model);
+  const pct = (v) => (v === undefined || v === null || v === '' ? '—' : (+v).toFixed(1).replace('.', ',') + '%');
 
-  // цвета легенд — только стиль, текст легенд в HTML
-  document.querySelectorAll('.mx-sw[data-kind]').forEach((el) => { el.style.background = kindColor(el.dataset.kind); });
-  document.querySelectorAll('.mx-sw[data-st]').forEach((el) => { el.style.background = ST[el.dataset.st]; });
-})();
-</script>
-
-<script>
-(function () {
-  const { fmt, pick } = window.mx;
-  dash.draw('v', (el) => {
-    const d = dash.data(el.dataset.source);
-    if (d.status !== 'ok') { el.textContent = '—'; return; }
-    const r = pick(d.data, el.dataset.where);
-    el.textContent = r ? fmt(el.dataset.field, r[el.dataset.field]) : '—';
+  // числа в тексте
+  document.querySelectorAll('[data-v]').forEach((el) => {
+    const key = el.dataset.v;
+    if (key === 'ratio-api') {
+      const a = row('modding', 'Mixer-0.5B'), b = row('modding', 'Qwen2.5-Coder-0.5B');
+      el.textContent = a && b ? (+a.real_api / +b.real_api).toFixed(1).replace('.', ',') : '—';
+    } else if (key.startsWith('mod:')) {
+      const [, model, field] = key.split(':'); const r = row('modding', model); el.textContent = r ? pct(r[field]) : '—';
+    } else if (key.startsWith('size:')) {
+      const r = row('models', key.slice(5)); el.textContent = r && r.gguf_mb ? r.gguf_mb + ' МБ' : '—';
+    }
   });
 
-  function tipFor(chart) {
-    let tip = chart.querySelector('.mx-tip');
-    if (!tip) { tip = document.createElement('div'); tip.className = 'mx-tip'; tip.hidden = true; chart.appendChild(tip); }
-    return tip;
-  }
-  function showTip(chart, tip, ev, lines) {
-    tip.replaceChildren(...lines.map(([k, v], i) => {
-      const p = document.createElement('div');
-      if (i === 0) { const b = document.createElement('b'); b.textContent = k; p.appendChild(b); return p; }
-      const s = document.createElement('span'); s.className = 'mx-tk'; s.textContent = k + ': ';
-      p.append(s, document.createTextNode(v)); return p;
-    }));
-    tip.hidden = false;
-    const box = chart.getBoundingClientRect();
-    let x = ev.clientX - box.left + 12, y = ev.clientY - box.top + 12;
-    x = Math.min(x, box.width - tip.offsetWidth - 4);
-    tip.style.left = Math.max(0, x) + 'px';
-    tip.style.top = y + 'px';
-  }
-  window.mx.tipFor = tipFor; window.mx.showTip = showTip;
+  // карточки: значение, основа, полоса «основа → модель»
+  document.querySelectorAll('.metric[data-metric]').forEach((el) => {
+    const set = el.dataset.metric === 'mod' ? 'modding' : 'humaneval';
+    const m = row(set, el.dataset.model), b = row(set, el.dataset.base);
+    if (!m) return;
+    const mv = +m[el.dataset.field], bv = b ? +b[el.dataset.field] : null;
+    const r = document.createElement('div'); r.className = 'row';
+    const v = document.createElement('span'); v.className = 'v'; v.textContent = pct(mv);
+    r.appendChild(v);
+    if (bv !== null) {
+      const s = document.createElement('span'); s.className = 'base' + (mv < bv ? ' worse' : '');
+      s.textContent = 'основа ' + pct(bv); r.appendChild(s);
+    }
+    const bar = document.createElement('div'); bar.className = 'bar';
+    const lo = Math.min(mv, bv ?? mv), hi = Math.max(mv, bv ?? mv);
+    const base = document.createElement('i'); base.className = 'b'; base.style.width = (bv ?? 0) + '%';
+    const mine = document.createElement('i'); mine.className = 'm';
+    if (bv === null || mv >= bv) { mine.style.left = (bv ?? 0) + '%'; mine.style.width = (mv - (bv ?? 0)) + '%'; }
+    else { mine.style.left = '0'; mine.style.width = mv + '%'; base.style.background = 'var(--down)'; base.style.opacity = '.55'; }
+    bar.append(base, mine);
+    el.append(r, bar);
+    el.setAttribute('aria-label', `${el.querySelector('.k').textContent}: ${pct(mv)}` + (bv !== null ? `, основа ${pct(bv)}` : ''));
+  });
 
-  function status(el, d) {
-    if (d.status === 'ok') return true;
-    el.replaceChildren(document.createTextNode(d.status === 'error' ? 'Не удалось загрузить' : '—'));
-    return false;
-  }
-  window.mx.status = status;
-
-  // Моддинг: полосы итога
-  dash.draw('mod-bars', (el) => {
-    const d = dash.data('modding');
-    if (!status(el, d)) return;
-    const rows = [...d.data].sort((a, b) => +b.total - +a.total);
-    const list = document.createElement('div');
-    list.className = 'mx-bars';
-    const tip = document.createElement('div'); tip.className = 'mx-tip'; tip.hidden = true;
-    rows.forEach((r) => {
-      const row = document.createElement('div'); row.className = 'mx-row';
-      const name = document.createElement('span'); name.className = 'mx-name'; name.textContent = r.model;
-      const track = document.createElement('div'); track.className = 'mx-track';
-      const fill = document.createElement('div'); fill.className = 'mx-fill';
-      fill.style.width = Math.max(0, Math.min(100, +r.total)) + '%';
-      fill.style.background = window.mx.kindColor(r.kind);
-      track.appendChild(fill);
-      const val = document.createElement('span'); val.className = 'mx-val'; val.textContent = fmt('total', r.total);
-      row.append(name, track, val);
-      row.addEventListener('mousemove', (ev) => showTip(el, tip, ev, [
-        [r.model], ['Итог', fmt('total', r.total)], ['Синтаксис Java', fmt('syntax', r.syntax)],
-        ['Реальные импорты', fmt('real_api', r.real_api)], ['Без утечек версий', fmt('no_leaks', r.no_leaks)],
-        ['Якоря', fmt('anchors', r.anchors)]]));
-      row.addEventListener('mouseleave', () => { tip.hidden = true; });
-      list.appendChild(row);
+  // таблица сравнения
+  const tb = document.getElementById('cmp');
+  D.modding.filter((r) => r.model !== 'Mixer-0.6B v1').forEach((r) => {
+    const h = row('humaneval', r.model);
+    const tr = document.createElement('tr');
+    const cells = [r.model, pct(r.total), pct(r.real_api), pct(r.no_leaks), h ? pct(h.pass_at_1) : '—'];
+    cells.forEach((c, i) => {
+      const td = document.createElement('td'); td.textContent = c;
+      if (i === 0) {
+        if (r.kind === 'Mixer') td.className = 'ours';
+        const t = document.createElement('span'); t.className = 'tag';
+        t.textContent = r.kind === 'Mixer' ? 'наша' : r.kind === 'ориентир' ? 'облачная' : 'основа';
+        td.appendChild(t);
+      }
+      tr.appendChild(td);
     });
-    el.replaceChildren(list, tip);
+    tb.appendChild(tr);
   });
 
-  function tableRows(tbody, d, fields, strong) {
-    if (d.status !== 'ok') { tbody.replaceChildren(); return; }
-    tbody.replaceChildren(...d.data.map((r) => {
-      const tr = document.createElement('tr');
-      tr.setAttribute('data-key', encodeURIComponent(r.model));   // в ячейке ещё метка вида — ключ строки отдельно
-      fields.forEach((f) => {
-        const td = document.createElement('td');
-        td.textContent = f === 'model' || f === 'base' || f === 'hardware' ? r[f] : fmt(f, r[f]);
-        if (f === strong) td.className = 'mx-strong';
-        if (f === 'model' && r.kind) {
-          const pill = document.createElement('span'); pill.className = 'mx-pill'; pill.textContent = r.kind;
-          td.appendChild(pill);
-        }
-        tr.appendChild(td);
-      });
-      return tr;
-    }));
-  }
-  dash.draw('mod-rows', (tb) => tableRows(tb, dash.data('modding'),
-    ['model', 'total', 'syntax', 'real_api', 'no_leaks', 'anchors', 'sec_per_task'], 'total'));
-  dash.draw('he-rows', (tb) => tableRows(tb, dash.data('humaneval'),
-    ['model', 'pass_at_1', 'compile_error', 'tests_failed', 'tasks'], 'pass_at_1'));
-  dash.draw('models-rows', (tb) => tableRows(tb, dash.data('models'),
-    ['model', 'base', 'params_b', 'hardware', 'train_minutes', 'epochs', 'examples', 'gen_tok_s', 'gguf_mb'], null));
-})();
-</script>
-
-<script>
-(function () {
-  const { fmt, ST, showTip, status } = window.mx;
-
-  // HumanEval: составные полосы решено / упали / не скомпилировалось
-  dash.draw('he-bars', (el) => {
-    const d = dash.data('humaneval');
-    if (!status(el, d)) return;
-    const rows = [...d.data].sort((a, b) => +b.pass_at_1 - +a.pass_at_1);
-    const list = document.createElement('div'); list.className = 'mx-bars';
-    const tip = document.createElement('div'); tip.className = 'mx-tip'; tip.hidden = true;
-    rows.forEach((r) => {
-      const row = document.createElement('div'); row.className = 'mx-row';
-      const name = document.createElement('span'); name.className = 'mx-name'; name.textContent = r.model;
-      const track = document.createElement('div'); track.className = 'mx-track';
-      [['pass', r.pass_at_1], ['fail', r.tests_failed], ['compile', r.compile_error]].forEach(([k, v]) => {
-        const seg = document.createElement('div'); seg.className = 'mx-fill';
-        seg.style.width = Math.max(0, +v) + '%'; seg.style.background = ST[k];
-        track.appendChild(seg);
-      });
-      const val = document.createElement('span'); val.className = 'mx-val'; val.textContent = fmt('pass_at_1', r.pass_at_1);
-      row.append(name, track, val);
-      row.addEventListener('mousemove', (ev) => showTip(el, tip, ev, [
-        [r.model], ['Решено', fmt('pass_at_1', r.pass_at_1)], ['Тесты упали', fmt('tests_failed', r.tests_failed)],
-        ['Не скомпилировалось', fmt('compile_error', r.compile_error)], ['Задач', r.tasks]]));
-      row.addEventListener('mouseleave', () => { tip.hidden = true; });
-      list.appendChild(row);
-    });
-    el.replaceChildren(list, tip);
-  });
-
-  // Утечки версий: тепловая карта модель × эпоха
-  dash.draw('era-heat', (el) => {
-    const d = dash.data('eras');
-    if (!status(el, d)) return;
-    const eras = [...new Map(d.data.map((r) => [r.era, r.versions])).entries()].sort((a, b) => a[0].localeCompare(b[0]));
-    const models = [...new Set(d.data.map((r) => r.model))];
-    const grid = document.createElement('div'); grid.className = 'mx-heat';
-    grid.style.gridTemplateColumns = `minmax(110px, 1.4fr) repeat(${eras.length}, minmax(44px, 1fr))`;
-    const tip = document.createElement('div'); tip.className = 'mx-tip'; tip.hidden = true;
-    grid.appendChild(document.createElement('span'));
-    eras.forEach(([e, v]) => { const h = document.createElement('span'); h.className = 'mx-h'; h.textContent = v; grid.appendChild(h); });
-    models.forEach((m) => {
-      const rn = document.createElement('span'); rn.className = 'mx-rn'; rn.textContent = m; grid.appendChild(rn);
-      eras.forEach(([e, v]) => {
-        const r = d.data.find((x) => x.model === m && x.era === e);
-        const c = document.createElement('span'); c.className = 'mx-c';
-        if (r) {
-          const leak = +r.leak;
-          c.textContent = fmt('leak', r.leak).replace(',0%', '%');
-          c.style.background = `color-mix(in srgb, var(--cds-chart-status-critical) ${Math.round(leak * 0.8)}%, transparent)`;
-          c.addEventListener('mousemove', (ev) => showTip(el, tip, ev, [
-            [m], ['Версии', v], ['Утечки', fmt('leak', r.leak)], ['Якоря', fmt('anchors', r.anchors)], ['Задач', r.tasks]]));
-          c.addEventListener('mouseleave', () => { tip.hidden = true; });
-        } else { c.textContent = '—'; }
-        grid.appendChild(c);
-      });
-    });
-    const wrap = document.createElement('div'); wrap.className = 'mx-wrap'; wrap.appendChild(grid);
-    el.replaceChildren(wrap, tip);
-  });
-
-  // Кривые обучения
-  dash.draw('loss', (el) => {
-    const d = dash.data('training');
-    if (!status(el, d)) return;
-    const rows = d.data.map((r) => ({ run: r.run, step: +r.step, loss: +r.eval_loss }));
+  // кривые «ум по ходу обучения»
+  const COL = ['#f2f2f0', '#7ad37a', '#8fb4ff'];
+  function curve(el) {
+    const metric = el.dataset.curve;
+    const rows = D.skill.map((r) => ({ run: r.run, step: +r.step, v: +r[metric], r }));
+    if (!rows.length) { el.innerHTML = ''; const p = document.createElement('div'); p.className = 'empty'; p.textContent = 'Промежуточные версии ещё считаются.'; el.appendChild(p); return; }
     const runs = [...new Set(rows.map((r) => r.run))];
-    const W = Math.max(280, el.clientWidth), H = 260, m = { t: 12, r: 16, b: 34, l: 40 };
-    const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.step)]).range([m.l, W - m.r]);
-    const y = d3.scaleLinear().domain([Math.min(0.6, d3.min(rows, (r) => r.loss)), d3.max(rows, (r) => r.loss)]).nice().range([H - m.b, m.t]);
+    const W = Math.max(260, el.clientWidth), H = 230, m = { t: 18, r: 10, b: 28, l: 34 };
+    const x = d3.scaleLinear().domain([0, Math.max(1, d3.max(rows, (r) => r.step))]).range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([Math.max(0, d3.min(rows, (r) => r.v) - 6), Math.min(100, d3.max(rows, (r) => r.v) + 6)]).nice().range([H - m.b, m.t]);
     const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-      .attr('aria-label', 'Ошибка на проверочных примерах по шагам обучения');
-    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 90))))
-      .call((g) => g.selectAll('line,path').style('stroke', 'var(--cds-chart-axis)'));
-    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat((v) => String(v).replace('.', ',')))
-      .call((g) => g.selectAll('line,path').style('stroke', 'var(--cds-chart-axis)'));
-    svg.append('g').selectAll('line').data(y.ticks(5)).join('line')
-      .attr('x1', m.l).attr('x2', W - m.r).attr('y1', (v) => y(v)).attr('y2', (v) => y(v)).style('stroke', 'var(--cds-chart-grid)');
-    svg.append('text').attr('x', W - m.r).attr('y', H - 4).attr('text-anchor', 'end').text('шаг обучения');
+      .attr('aria-label', el.parentElement.querySelector('h4').textContent + ' по шагам обучения');
+    svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', W - m.r)
+      .attr('y1', (v) => y(v)).attr('y2', (v) => y(v)).attr('stroke', '#2c2c2f');
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 90))).tickSize(0).tickPadding(8))
+      .call((g) => g.select('.domain').attr('stroke', '#3a3a3e'));
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(0).tickPadding(6).tickFormat((v) => v + '%'))
+      .call((g) => g.select('.domain').remove());
     runs.forEach((run, i) => {
       const pts = rows.filter((r) => r.run === run).sort((a, b) => a.step - b.step);
-      svg.append('path').datum(pts).attr('fill', 'none').style('stroke', dash.colors[i % dash.colors.length]).attr('stroke-width', 2)
-        .attr('d', d3.line().x((p) => x(p.step)).y((p) => y(p.loss)));
-      svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.step)).attr('cy', (p) => y(p.loss))
-        .attr('r', 3).style('fill', dash.colors[i % dash.colors.length]);
+      svg.append('path').datum(pts).attr('fill', 'none').attr('stroke', COL[i % COL.length]).attr('stroke-width', 2)
+        .attr('d', d3.line().x((p) => x(p.step)).y((p) => y(p.v)));
+      svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.step)).attr('cy', (p) => y(p.v)).attr('r', 3)
+        .attr('fill', COL[i % COL.length]);
       const last = pts[pts.length - 1];
-      svg.append('text').attr('x', x(last.step) - 4).attr('y', y(last.loss) - 8 - i * 0).attr('text-anchor', 'end')
-        .text(`${run}: ${String(last.loss.toFixed(2)).replace('.', ',')}`);
+      const nearLeft = x(last.step) < W / 2;               // у левого края подпись идёт вправо, иначе обрежется
+      svg.append('text').attr('x', nearLeft ? x(last.step) + 6 : Math.min(x(last.step), W - m.r)).attr('y', y(last.v) - 9)
+        .attr('text-anchor', nearLeft ? 'start' : 'end')
+        .attr('fill', COL[i % COL.length]).style('fill', COL[i % COL.length]).text(run);
     });
-    const tip = document.createElement('div'); tip.className = 'mx-tip'; tip.hidden = true;
+    const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true;
     const node = svg.node();
     node.addEventListener('mousemove', (ev) => {
       const box = node.getBoundingClientRect();
-      const px = (ev.clientX - box.left) * (W / box.width), py = (ev.clientY - box.top) * (H / box.height);
-      let best = null, bd = Infinity;
-      rows.forEach((r) => { const dd = Math.hypot(x(r.step) - px, y(r.loss) - py); if (dd < bd) { bd = dd; best = r; } });
-      if (!best || bd > 40) { tip.hidden = true; return; }
-      showTip(el, tip, ev, [[best.run], ['Шаг', String(best.step)], ['Eval loss', best.loss.toFixed(4).replace('.', ',')]]);
+      const px = (ev.clientX - box.left) * W / box.width, py = (ev.clientY - box.top) * H / box.height;
+      let best = null, bd = 1e9;
+      rows.forEach((p) => { const d = Math.hypot(x(p.step) - px, y(p.v) - py); if (d < bd) { bd = d; best = p; } });
+      if (!best || bd > 36) { tip.hidden = true; return; }
+      tip.replaceChildren();
+      [[best.run + ', шаг ' + best.step, ''], ['Моддинг ', pct(best.r.modding_total)], ['HumanEval-Java ', pct(best.r.humaneval)],
+       ['Реальные импорты ', pct(best.r.real_api)]].forEach(([k, v], i) => {
+        const d = document.createElement('div');
+        if (i === 0) { const b = document.createElement('b'); b.textContent = k; d.appendChild(b); }
+        else { const s = document.createElement('span'); s.textContent = k; d.append(s, document.createTextNode(v)); }
+        tip.appendChild(d);
+      });
+      tip.hidden = false;
+      const cb = el.getBoundingClientRect();
+      tip.style.left = Math.min(ev.clientX - cb.left + 12, cb.width - tip.offsetWidth) + 'px';
+      tip.style.top = (ev.clientY - cb.top + 12) + 'px';
     });
     node.addEventListener('mouseleave', () => { tip.hidden = true; });
     el.replaceChildren(node, tip);
-  });
+  }
+  const drawCurves = () => document.querySelectorAll('[data-curve]').forEach(curve);
+  drawCurves();
+  let w = innerWidth, t = 0;
+  addEventListener('resize', () => { if (innerWidth === w) return; w = innerWidth; clearTimeout(t); t = setTimeout(drawCurves, 120); });
+
+  // копирование команд
+  document.querySelectorAll('[data-copy]').forEach((btn) => btn.addEventListener('click', async () => {
+    const el = document.getElementById(btn.dataset.copy);
+    try { await navigator.clipboard.writeText(el.textContent); btn.textContent = 'Скопировано'; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Выделено'; }
+    setTimeout(() => { btn.textContent = 'Копировать'; }, 1600);
+  }));
+
+  // небо: редкие тусклые точки и квадратики, без анимации
+  const c = document.getElementById('sky'), g = c.getContext('2d');
+  function sky() {
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    c.width = innerWidth * dpr; c.height = innerHeight * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, innerWidth, innerHeight);
+    let s = 7;
+    const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+    const n = Math.round(innerWidth * innerHeight / 9000);
+    for (let i = 0; i < n; i++) {
+      const xx = rnd() * innerWidth, yy = rnd() * innerHeight, a = .04 + rnd() * .14, z = rnd() < .12 ? 2 : 1.2;
+      g.fillStyle = `rgba(242,242,240,${a})`; g.fillRect(xx, yy, z, z);
+    }
+  }
+  sky(); addEventListener('resize', sky);
 })();
 </script>
-
-<script>
-  (function () {
-    const { showTip } = window.mx;
-    dash.draw('skill', (el) => {
-      const d = dash.data('skill');
-      if (d.status !== 'ok' || !d.data.length) {
-        const p = document.createElement('p'); p.className = 'mx-skill-empty';
-        p.textContent = 'Промежуточные версии ещё считаются — график появится после следующего обновления.';
-        el.replaceChildren(p); return;
-      }
-      const metric = el.dataset.metric;
-      const rows = d.data.map((r) => ({ run: r.run, step: +r.step, v: +r[metric] }));
-      const runs = [...new Set(rows.map((r) => r.run))];
-      const W = Math.max(280, el.clientWidth), H = 250, m = { t: 26, r: 14, b: 32, l: 36 };
-      const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.step)]).range([m.l, W - m.r]);
-      const lo = Math.max(0, d3.min(rows, (r) => r.v) - 5), hi = Math.min(100, d3.max(rows, (r) => r.v) + 5);
-      const y = d3.scaleLinear().domain([lo, hi]).nice().range([H - m.b, m.t]);
-      const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-        .attr('aria-label', el.dataset.title + ' по шагам обучения');
-      svg.append('text').attr('x', m.l).attr('y', 14).text(el.dataset.title).style('font-weight', 600).style('fill', 'var(--color-fg)');
-      svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r)
-        .attr('y1', (v) => y(v)).attr('y2', (v) => y(v)).style('stroke', 'var(--cds-chart-grid)');
-      svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 90))))
-        .call((g) => g.selectAll('line,path').style('stroke', 'var(--cds-chart-axis)'));
-      svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5))
-        .call((g) => g.selectAll('line,path').style('stroke', 'var(--cds-chart-axis)'));
-      runs.forEach((run, i) => {
-        const col = dash.colors[i % dash.colors.length];
-        const pts = rows.filter((r) => r.run === run).sort((a, b) => a.step - b.step);
-        svg.append('path').datum(pts).attr('fill', 'none').style('stroke', col).attr('stroke-width', 2)
-          .attr('d', d3.line().x((p) => x(p.step)).y((p) => y(p.v)));
-        svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.step)).attr('cy', (p) => y(p.v))
-          .attr('r', 3.2).style('fill', col);
-        const last = pts[pts.length - 1];
-        svg.append('text').attr('x', x(last.step) - 4).attr('y', y(last.v) - 8).attr('text-anchor', 'end')
-          .text(`${run}: ${last.v.toFixed(1).replace('.', ',')}%`);
-      });
-      const tip = document.createElement('div'); tip.className = 'mx-tip'; tip.hidden = true;
-      const node = svg.node();
-      node.addEventListener('mousemove', (ev) => {
-        const box = node.getBoundingClientRect();
-        const px = (ev.clientX - box.left) * (W / box.width), py = (ev.clientY - box.top) * (H / box.height);
-        let best = null, bd = Infinity;
-        rows.forEach((r) => { const dd = Math.hypot(x(r.step) - px, y(r.v) - py); if (dd < bd) { bd = dd; best = r; } });
-        if (!best || bd > 40) { tip.hidden = true; return; }
-        const full = d.data.find((r) => r.run === best.run && +r.step === best.step);
-        showTip(el, tip, ev, [[best.run + ', шаг ' + best.step], ['HumanEval-Java', full.humaneval + '%'],
-          ['Моддинг, итог', full.modding_total + '%'], ['Реальные импорты', full.real_api + '%'], ['Якоря', full.anchors + '%']]);
-      });
-      node.addEventListener('mouseleave', () => { tip.hidden = true; });
-      el.replaceChildren(node, tip);
-    });
-  })();
-  </script>
-
-</div>
-<footer class="mx-foot">
-  <p>Mixer — эксперимент по дообучению маленьких языковых моделей (0.5–0.6B) для моддинга Minecraft на Java.
-  Модели запускаются локально через llama.cpp. Цифры — из прогонов на 60 отложенных задачах по моддингу и 158 задачах
-  HumanEval-Java; исходные таблицы лежат в папке <a href="data/">data</a>.</p>
-</footer>
 </body>
 </html>
