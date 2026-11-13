@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mixer Benchmarks</title>
+<title>Mixer</title>
 <meta name="description" content="Результаты Mixer — маленьких моделей для моддинга Minecraft: бенчмарк по моддингу и HumanEval-Java.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500&display=swap">
@@ -50,7 +50,7 @@
 <script>
   // Замена движку дашборда: данные встроены, рисунки перерисовываются при смене ширины.
   (function () {
-    const RAW = {"modding": "model,kind,tasks,total,syntax,real_api,no_leaks,anchors,has_code,sec_per_task\nQwen3-0.6B,основа,60,50.1,80.0,5.9,100.0,14.5,100.0,9.8\nQwen3-0.6B abliterated,основа,60,48.4,76.7,7.1,95.0,15.0,100.0,11.8\nQwen2.5-Coder-0.5B,основа,60,46.1,68.3,31.9,66.7,17.5,100.0,10.6\nMixer-0.6B v1,Mixer,60,12.2,11.7,13.3,15.0,8.8,15.0,26.8\nMixer-0.6B v2,Mixer,60,70.5,75.0,83.2,88.3,35.6,100.0,9.3\nMixer-0.5B,Mixer,60,72.6,73.3,87.1,90.0,40.0,98.3,9.9\nDeepSeek flash,ориентир,60,86.5,90.0,98.3,98.3,59.5,100.0,6.4\n", "humaneval": "model,kind,tasks,pass_at_1,compile_error,tests_failed,timeout\nQwen3-0.6B,основа,158,16.5,55.7,27.8,0\nQwen3-0.6B abliterated,основа,158,15.2,51.9,32.3,1\nQwen2.5-Coder-0.5B,основа,158,39.2,29.1,31.6,0\nMixer-0.6B v1,Mixer,158,22.2,25.3,52.5,0\nMixer-0.6B v2,Mixer,158,25.3,31.6,43.0,0\nMixer-0.5B,Mixer,158,36.7,21.5,41.8,0\n", "eras": "model,era,versions,leak,anchors,tasks\nQwen3-0.6B,E06,1.17-1.19.4,0.0,11.6,20\nQwen3-0.6B,E07,1.20-1.20.6,0.0,10.0,5\nQwen3-0.6B,E08,1.21-1.21.1,0.0,13.5,20\nQwen3-0.6B,E09,1.21.2-1.21.4,0.0,25.2,5\nQwen3-0.6B,E10,1.21.5+,0.0,18.0,5\nQwen3-0.6B,E11,26.x+,0.0,20.0,5\nQwen3-0.6B abliterated,E06,1.17-1.19.4,15.0,13.5,20\nQwen3-0.6B abliterated,E07,1.20-1.20.6,0.0,6.7,5\nQwen3-0.6B abliterated,E08,1.21-1.21.1,0.0,14.5,20\nQwen3-0.6B abliterated,E09,1.21.2-1.21.4,0.0,15.7,5\nQwen3-0.6B abliterated,E10,1.21.5+,0.0,28.7,5\nQwen3-0.6B abliterated,E11,26.x+,0.0,16.7,5\nQwen2.5-Coder-0.5B,E06,1.17-1.19.4,45.0,21.2,20\nQwen2.5-Coder-0.5B,E07,1.20-1.20.6,0.0,6.7,5\nQwen2.5-Coder-0.5B,E08,1.21-1.21.1,40.0,11.5,20\nQwen2.5-Coder-0.5B,E09,1.21.2-1.21.4,20.0,29.0,5\nQwen2.5-Coder-0.5B,E10,1.21.5+,0.0,28.7,5\nQwen2.5-Coder-0.5B,E11,26.x+,40.0,15.2,5\nMixer-0.6B v1,E06,1.17-1.19.4,0.0,11.1,20\nMixer-0.6B v1,E07,1.20-1.20.6,0.0,0.0,5\nMixer-0.6B v1,E08,1.21-1.21.1,0.0,13.8,20\nMixer-0.6B v1,E09,1.21.2-1.21.4,0.0,0.0,5\nMixer-0.6B v1,E10,1.21.5+,0.0,6.7,5\nMixer-0.6B v1,E11,26.x+,0.0,0.0,5\nMixer-0.6B v2,E06,1.17-1.19.4,0.0,43.2,20\nMixer-0.6B v2,E07,1.20-1.20.6,60.0,26.7,5\nMixer-0.6B v2,E08,1.21-1.21.1,5.0,35.9,20\nMixer-0.6B v2,E09,1.21.2-1.21.4,20.0,38.6,5\nMixer-0.6B v2,E10,1.21.5+,0.0,32.0,5\nMixer-0.6B v2,E11,26.x+,40.0,13.3,5\nMixer-0.5B,E06,1.17-1.19.4,5.0,48.0,20\nMixer-0.5B,E07,1.20-1.20.6,20.0,36.7,5\nMixer-0.5B,E08,1.21-1.21.1,0.0,37.7,20\nMixer-0.5B,E09,1.21.2-1.21.4,40.0,45.2,5\nMixer-0.5B,E10,1.21.5+,20.0,30.7,5\nMixer-0.5B,E11,26.x+,0.0,24.7,5\nDeepSeek flash,E06,1.17-1.19.4,5.0,63.5,20\nDeepSeek flash,E07,1.20-1.20.6,0.0,50.0,5\nDeepSeek flash,E08,1.21-1.21.1,0.0,67.0,20\nDeepSeek flash,E09,1.21.2-1.21.4,0.0,58.1,5\nDeepSeek flash,E10,1.21.5+,0.0,50.0,5\nDeepSeek flash,E11,26.x+,0.0,33.7,5\n", "training": "run,step,eval_loss\nMixer-0.5B,0,1.2703\nMixer-0.5B,60,0.832\nMixer-0.5B,120,0.7891\nMixer-0.5B,180,0.7651\nMixer-0.5B,240,0.7451\nMixer-0.5B,300,0.7304\nMixer-0.5B,360,0.7277\nMixer-0.5B,420,0.7199\nMixer-0.5B,480,0.716\nMixer-0.5B,540,0.7152\nMixer-0.5B,600,0.7147\nMixer-0.5B,625,0.7147\nMixer-0.6B v1,0,1.2485\nMixer-0.6B v1,40,0.9118\nMixer-0.6B v1,80,0.8723\nMixer-0.6B v1,120,0.8464\nMixer-0.6B v1,160,0.844\nMixer-0.6B v1,163,0.8441\nMixer-0.6B v2,0,1.5274\nMixer-0.6B v2,60,1.0091\nMixer-0.6B v2,120,0.9459\nMixer-0.6B v2,180,0.9119\nMixer-0.6B v2,240,0.8827\nMixer-0.6B v2,300,0.8679\nMixer-0.6B v2,360,0.8627\nMixer-0.6B v2,420,0.8491\nMixer-0.6B v2,480,0.8439\nMixer-0.6B v2,540,0.8396\nMixer-0.6B v2,600,0.8385\nMixer-0.6B v2,622,0.8385\n", "models": "model,base,params_b,hardware,train_minutes,epochs,examples,gen_tok_s,gguf_mb\nMixer-0.6B v1,Qwen3-0.6B-Base,0.6,RX 7600,41.9,1,2599,76,610\nMixer-0.6B v2,Huihui-Qwen3-0.6B-abliterated-v2,0.6,RX 7600,133.8,2,4971,100,610\nMixer-0.5B,Qwen2.5-Coder-0.5B-Instruct,0.5,Kaggle 2x T4,77,2,4993,110,506\n"};
+    const RAW = {"modding": "model,kind,tasks,total,syntax,real_api,no_leaks,anchors,has_code,sec_per_task\nQwen3-0.6B,основа,60,50.1,80.0,5.9,100.0,14.5,100.0,9.8\nQwen3-0.6B abliterated,основа,60,48.4,76.7,7.1,95.0,15.0,100.0,11.8\nQwen2.5-Coder-0.5B,основа,60,46.1,68.3,31.9,66.7,17.5,100.0,10.6\nMixer-0.6B v1,Mixer,60,12.2,11.7,13.3,15.0,8.8,15.0,26.8\nMixer-0.6B v2,Mixer,60,70.5,75.0,83.2,88.3,35.6,100.0,9.3\nMixer-0.5B,Mixer,60,72.6,73.3,87.1,90.0,40.0,98.3,9.9\nDeepSeek flash,ориентир,60,86.5,90.0,98.3,98.3,59.5,100.0,6.4\n", "humaneval": "model,kind,tasks,pass_at_1,compile_error,tests_failed,timeout\nQwen3-0.6B,основа,158,16.5,55.7,27.8,0\nQwen3-0.6B abliterated,основа,158,15.2,51.9,32.3,1\nQwen2.5-Coder-0.5B,основа,158,39.2,29.1,31.6,0\nMixer-0.6B v1,Mixer,158,22.2,25.3,52.5,0\nMixer-0.6B v2,Mixer,158,25.3,31.6,43.0,0\nMixer-0.5B,Mixer,158,36.7,21.5,41.8,0\n", "eras": "model,era,versions,leak,anchors,tasks\nQwen3-0.6B,E06,1.17-1.19.4,0.0,11.6,20\nQwen3-0.6B,E07,1.20-1.20.6,0.0,10.0,5\nQwen3-0.6B,E08,1.21-1.21.1,0.0,13.5,20\nQwen3-0.6B,E09,1.21.2-1.21.4,0.0,25.2,5\nQwen3-0.6B,E10,1.21.5+,0.0,18.0,5\nQwen3-0.6B,E11,26.x+,0.0,20.0,5\nQwen3-0.6B abliterated,E06,1.17-1.19.4,15.0,13.5,20\nQwen3-0.6B abliterated,E07,1.20-1.20.6,0.0,6.7,5\nQwen3-0.6B abliterated,E08,1.21-1.21.1,0.0,14.5,20\nQwen3-0.6B abliterated,E09,1.21.2-1.21.4,0.0,15.7,5\nQwen3-0.6B abliterated,E10,1.21.5+,0.0,28.7,5\nQwen3-0.6B abliterated,E11,26.x+,0.0,16.7,5\nQwen2.5-Coder-0.5B,E06,1.17-1.19.4,45.0,21.2,20\nQwen2.5-Coder-0.5B,E07,1.20-1.20.6,0.0,6.7,5\nQwen2.5-Coder-0.5B,E08,1.21-1.21.1,40.0,11.5,20\nQwen2.5-Coder-0.5B,E09,1.21.2-1.21.4,20.0,29.0,5\nQwen2.5-Coder-0.5B,E10,1.21.5+,0.0,28.7,5\nQwen2.5-Coder-0.5B,E11,26.x+,40.0,15.2,5\nMixer-0.6B v1,E06,1.17-1.19.4,0.0,11.1,20\nMixer-0.6B v1,E07,1.20-1.20.6,0.0,0.0,5\nMixer-0.6B v1,E08,1.21-1.21.1,0.0,13.8,20\nMixer-0.6B v1,E09,1.21.2-1.21.4,0.0,0.0,5\nMixer-0.6B v1,E10,1.21.5+,0.0,6.7,5\nMixer-0.6B v1,E11,26.x+,0.0,0.0,5\nMixer-0.6B v2,E06,1.17-1.19.4,0.0,43.2,20\nMixer-0.6B v2,E07,1.20-1.20.6,60.0,26.7,5\nMixer-0.6B v2,E08,1.21-1.21.1,5.0,35.9,20\nMixer-0.6B v2,E09,1.21.2-1.21.4,20.0,38.6,5\nMixer-0.6B v2,E10,1.21.5+,0.0,32.0,5\nMixer-0.6B v2,E11,26.x+,40.0,13.3,5\nMixer-0.5B,E06,1.17-1.19.4,5.0,48.0,20\nMixer-0.5B,E07,1.20-1.20.6,20.0,36.7,5\nMixer-0.5B,E08,1.21-1.21.1,0.0,37.7,20\nMixer-0.5B,E09,1.21.2-1.21.4,40.0,45.2,5\nMixer-0.5B,E10,1.21.5+,20.0,30.7,5\nMixer-0.5B,E11,26.x+,0.0,24.7,5\nDeepSeek flash,E06,1.17-1.19.4,5.0,63.5,20\nDeepSeek flash,E07,1.20-1.20.6,0.0,50.0,5\nDeepSeek flash,E08,1.21-1.21.1,0.0,67.0,20\nDeepSeek flash,E09,1.21.2-1.21.4,0.0,58.1,5\nDeepSeek flash,E10,1.21.5+,0.0,50.0,5\nDeepSeek flash,E11,26.x+,0.0,33.7,5\n", "training": "run,step,eval_loss\nMixer-0.5B,0,1.2703\nMixer-0.5B,60,0.832\nMixer-0.5B,120,0.7891\nMixer-0.5B,180,0.7651\nMixer-0.5B,240,0.7451\nMixer-0.5B,300,0.7304\nMixer-0.5B,360,0.7277\nMixer-0.5B,420,0.7199\nMixer-0.5B,480,0.716\nMixer-0.5B,540,0.7152\nMixer-0.5B,600,0.7147\nMixer-0.5B,625,0.7147\nMixer-0.6B v1,0,1.2485\nMixer-0.6B v1,40,0.9118\nMixer-0.6B v1,80,0.8723\nMixer-0.6B v1,120,0.8464\nMixer-0.6B v1,160,0.844\nMixer-0.6B v1,163,0.8441\nMixer-0.6B v2,0,1.5274\nMixer-0.6B v2,60,1.0091\nMixer-0.6B v2,120,0.9459\nMixer-0.6B v2,180,0.9119\nMixer-0.6B v2,240,0.8827\nMixer-0.6B v2,300,0.8679\nMixer-0.6B v2,360,0.8627\nMixer-0.6B v2,420,0.8491\nMixer-0.6B v2,480,0.8439\nMixer-0.6B v2,540,0.8396\nMixer-0.6B v2,600,0.8385\nMixer-0.6B v2,622,0.8385\n", "models": "model,base,params_b,hardware,train_minutes,epochs,examples,gen_tok_s,gguf_mb\nMixer-0.6B v1,Qwen3-0.6B-Base,0.6,RX 7600,41.9,1,2599,76,610\nMixer-0.6B v2,Huihui-Qwen3-0.6B-abliterated-v2,0.6,RX 7600,133.8,2,4971,100,610\nMixer-0.5B,Qwen2.5-Coder-0.5B-Instruct,0.5,Kaggle 2x T4,77,2,4993,110,506\n", "skill": "run,step,humaneval,modding_total,syntax,real_api,no_leaks,anchors\nMixer-0.6B v2,0,15.2,48.4,76.7,7.1,95.0,15.0\n"};
     const DATA = Object.fromEntries(Object.entries(RAW).map(([k, csv]) => [k, d3.csvParse(csv)]));
     const draws = [];
     window.dash = {
@@ -75,6 +75,162 @@
 </head>
 <body>
 <div id="dash-root">
+<style>
+  /* Сайт Mixer: шапка с сеткой «блоков», дальше узкая колонка разделов. */
+  .mz { display: flex; flex-direction: column; gap: 56px; margin-bottom: 56px; }
+  .mz-hero { position: relative; border: 1px solid var(--color-border-line); border-radius: 16px; overflow: hidden;
+             background:
+               linear-gradient(180deg, transparent 55%, var(--color-bg) 100%),
+               repeating-linear-gradient(0deg, color-mix(in srgb, var(--color-border-line) 55%, transparent) 0 1px, transparent 1px 28px),
+               repeating-linear-gradient(90deg, color-mix(in srgb, var(--color-border-line) 55%, transparent) 0 1px, transparent 1px 28px),
+               var(--color-panel); }
+  .mz-hero-in { padding: 44px clamp(18px, 5vw, 48px) 36px; display: flex; flex-direction: column; gap: 18px; }
+  .mz-eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-fg-muted); }
+  .mz-name { font-family: var(--font-anthropic-serif); font-weight: 500; font-size: clamp(52px, 11vw, 92px); line-height: .95;
+             margin: 0; letter-spacing: -.02em; }
+  .mz-name span { color: var(--c1); }
+  .mz-tag { font-size: clamp(17px, 2.4vw, 21px); line-height: 1.45; margin: 0; max-width: 34em; text-wrap: balance; }
+  .mz-code { font-family: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 13.5px;
+             background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 8px;
+             padding: 10px 12px; overflow-x: auto; white-space: pre; margin: 0; color: var(--color-fg); }
+  .mz-code b { color: var(--c1); font-weight: 600; }
+  .mz-cta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .mz-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 9px; text-decoration: none;
+            border: 1px solid var(--color-border-line); color: var(--color-fg); background: var(--color-bg); font-weight: 500; }
+  .mz-btn:hover { border-color: var(--c1); }
+  .mz-btn:focus-visible, .mz-copy:focus-visible { outline: 2px solid var(--c1); outline-offset: 2px; }
+  .mz-btn-main { background: var(--c1); border-color: var(--c1); color: #fff; }
+  .mz-btn-main:hover { filter: brightness(1.08); }
+  .mz-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; margin-top: 8px;
+              background: var(--color-border-line); border: 1px solid var(--color-border-line); border-radius: 10px; overflow: hidden; }
+  .mz-stat { background: var(--color-panel); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .mz-stat b { font-family: var(--font-anthropic-serif); font-weight: 500; font-size: 28px; font-variant-numeric: tabular-nums; }
+  .mz-stat span { color: var(--color-fg-muted); font-size: 13px; line-height: 1.35; }
+  .mz-sec { display: flex; flex-direction: column; gap: 16px; }
+  .mz-sec > h2 { font-family: var(--font-anthropic-serif); font-weight: 500; font-size: 28px; margin: 0; }
+  .mz-sec > p { margin: 0; line-height: 1.6; max-width: 68ch; color: var(--color-fg-muted); }
+  .mz-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: s; }
+  .mz-steps li { counter-increment: s; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; min-width: 0; }
+  .mz-steps li::before { content: counter(s); width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center;
+                         background: var(--color-panel); border: 1px solid var(--color-border-line); font-weight: 600; font-size: 13px; }
+  .mz-steps li > div { display: block; min-width: 0; padding-top: 4px; line-height: 1.55; }
+  .mz-cmd { display: flex; gap: 8px; align-items: stretch; min-width: 0; margin: 8px 0; }
+  .mz-cmd .mz-code { flex: 1; min-width: 0; }
+  .mz-copy { border: 1px solid var(--color-border-line); background: var(--color-panel); color: var(--color-fg); border-radius: 8px;
+             padding: 0 12px; cursor: pointer; font: inherit; font-size: 13px; }
+  .mz-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .mz-card { border: 1px solid var(--color-border-line); border-radius: 12px; background: var(--color-panel); padding: 18px;
+             display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .mz-card h3 { margin: 0; font-size: 16px; }
+  .mz-card p, .mz-card li { margin: 0; color: var(--color-fg-muted); line-height: 1.55; font-size: 14px; }
+  .mz-card ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+  .mz-tbl { overflow-x: auto; }
+  .mz-tbl table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  .mz-tbl th, .mz-tbl td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+  .mz-tbl th { color: var(--color-fg-muted); font-weight: 600; white-space: nowrap; }
+  .mz-tbl td:first-child { white-space: nowrap; }
+  .mz-tbl code { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: 13px; color: var(--c1); }
+  .mz-res-head { display: flex; flex-direction: column; gap: 8px; }
+  .mz-res-head h2 { font-family: var(--font-anthropic-serif); font-weight: 500; font-size: 28px; margin: 0; }
+  @media (prefers-reduced-motion: no-preference) { .mz-btn { transition: border-color .15s ease, filter .15s ease; } }
+</style>
+
+<div class="mz">
+  <section class="mz-hero" id="about">
+    <div class="mz-hero-in">
+      <span class="mz-eyebrow">Локальная модель · 0,5 млрд параметров · llama.cpp и LM Studio</span>
+      <h1 class="mz-name">Mix<span>er</span></h1>
+      <p class="mz-tag">Маленькая модель, которая пишет моды, рендер и миксины для Minecraft на Java — под конкретную версию игры, загрузчик и маппинги.</p>
+      <pre class="mz-code"><b>[MC=1.21.4][LOADER=fabric][MAP=yarn][JAVA=21]</b>
+Сделай клиентский HUD, который рисует FPS и координаты игрока.</pre>
+      <div class="mz-cta">
+        <a class="mz-btn mz-btn-main" href="https://github.com/Ma3stro567/mixer/releases">Скачать Mixer-0.5B · GGUF Q8_0</a>
+        <a class="mz-btn" href="#run">Как запустить</a>
+        <a class="mz-btn" href="#results">Результаты</a>
+      </div>
+      <div class="mz-stats">
+        <div class="mz-stat"><b data-draw="v" data-source="modding" data-field="total" data-where="model=Mixer-0.5B">—</b><span>итог по моддингу (основа без обучения — <i data-draw="v" data-source="modding" data-field="total" data-where="model=Qwen2.5-Coder-0.5B">—</i>)</span></div>
+        <div class="mz-stat"><b data-draw="v" data-source="modding" data-field="real_api" data-where="model=Mixer-0.5B">—</b><span>импортов Minecraft — настоящие, не выдуманные</span></div>
+        <div class="mz-stat"><b data-draw="v" data-source="humaneval" data-field="pass_at_1" data-where="model=Mixer-0.5B">—</b><span>задач HumanEval-Java решено с тестами</span></div>
+        <div class="mz-stat"><b data-draw="v" data-source="models" data-field="gen_tok_s" data-where="model=Mixer-0.5B">—</b><span>на AMD RX 7600 в llama.cpp</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mz-sec" id="run">
+    <h2>Как запустить</h2>
+    <ol class="mz-steps">
+      <li><div>Скачайте <b>Mixer-0.5B-Q8_0.gguf</b> (506 МБ) со страницы <a href="https://github.com/Ma3stro567/mixer/releases">Releases</a>.</div></li>
+      <li><div>Запустите сервер llama.cpp (подойдёт сборка с Vulkan для AMD и NVIDIA) и откройте http://127.0.0.1:8080:
+        <div class="mz-cmd"><pre class="mz-code" id="cmd-server">llama-server -m Mixer-0.5B-Q8_0.gguf -ngl 99 -c 8192 --jinja --temp 0.2 --repeat-penalty 1.1</pre><button class="mz-copy" type="button" data-copy="cmd-server">Копировать</button></div>
+        Или откройте файл в LM Studio: температура 0,2, штраф за повторы 1,1.</div></li>
+      <li><div>Первой строкой системного промпта укажите цель — модель учили только с ним:
+        <div class="mz-cmd"><pre class="mz-code" id="cmd-tag">[MC=1.21.4][LOADER=fabric][MAP=yarn][JAVA=21]
+Пиши код строго под эту цель. API других версий не используй.</pre><button class="mz-copy" type="button" data-copy="cmd-tag">Копировать</button></div></div></li>
+      <li><div>Пишите задачу обычными словами, можно по-русски. Модель сначала рассуждает в блоке &lt;think&gt; — какие классы нужны для этой версии, — потом пишет код.</div></li>
+    </ol>
+    <div class="mz-tbl">
+      <table>
+        <thead><tr><th>Поле тега</th><th>Значения</th><th>Пояснение</th></tr></thead>
+        <tbody>
+          <tr><td><code>MC</code></td><td>1.16.5, 1.18.2, 1.19.4, 1.20.1, 1.21.1, 1.21.4, 1.21.11, 26.3 …</td><td>Точная версия игры. Модель учили на версиях от 1.16 до 26.x.</td></tr>
+          <tr><td><code>LOADER</code></td><td>fabric, forge, neoforge, quilt, common, none</td><td>none — MCP-клиенты без загрузчика; common — общий код multi-loader проектов.</td></tr>
+          <tr><td><code>MAP</code></td><td>yarn, mojmap, mcp, official</td><td>Имена классов: Yarn (Fabric), Mojmap (NeoForge и Forge 1.17+), MCP (до 1.16.5), official (26.x без обфускации).</td></tr>
+          <tr><td><code>JAVA</code></td><td>8, 17, 21</td><td>8 — до 1.16.5, 17 — 1.17–1.20.4, 21 — 1.20.5 и новее.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mz-sec" id="inside">
+    <h2>Как её делали</h2>
+    <div class="mz-grid2">
+      <div class="mz-card">
+        <h3>Данные</h3>
+        <ul>
+          <li>Исходники около 400 открытых модов с GitHub и Modrinth, только версии от 1.16.</li>
+          <li>77 136 классов с точной меткой версии, загрузчика и маппингов; дубли и автоген удалены.</li>
+          <li>1 974 задачи к настоящему коду: формулировка и рассуждение, код в примерах — из реальных модов.</li>
+          <li>2 500 задач по общей Java и 530 обычных диалогов, чтобы модель не разучилась разговаривать.</li>
+        </ul>
+      </div>
+      <div class="mz-card">
+        <h3>Обучение</h3>
+        <ul>
+          <li>Основа — Qwen2.5-Coder-0.5B-Instruct: на маленьком размере кодовая модель заметно сильнее общей.</li>
+          <li>LoRA r=32, около 20 млн обучаемых параметров, 2 эпохи по 4 993 примерам.</li>
+          <li>Две видеокарты T4 на Kaggle, 77 минут.</li>
+          <li>Проверка без ИИ-судьи: синтаксис, реальность импортов, утечки версий, HumanEval-Java с тестами.</li>
+        </ul>
+      </div>
+      <div class="mz-card">
+        <h3>Ограничения</h3>
+        <ul>
+          <li>Это 0,5 млрд параметров: код — хорошая заготовка, а не готовый мод. Задачи целиком решает редко.</li>
+          <li>Иногда путает версии — чаще всего на 1.20.x и 1.21.2–1.21.4 — и вставляет классы из чужих модов.</li>
+          <li>На общей Java прироста над основой нет: 36,7% против 39,2% на HumanEval-Java, в пределах погрешности.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="mz-res-head" id="results">
+    <h2>Результаты</h2>
+    <p class="mx-sub">Все модели запускались одинаково: llama.cpp, файлы Q8_0, температура 0. Бенчмарк по моддингу — задачи из модов, которых модели не видели при обучении.</p>
+  </section>
+</div>
+
+<script>
+  document.querySelectorAll('.mz-copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const el = document.getElementById(btn.dataset.copy);
+      if (!el) return;
+      try { await navigator.clipboard.writeText(el.textContent); btn.textContent = 'Скопировано'; }
+      catch (e) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Выделено'; }
+      setTimeout(() => { btn.textContent = 'Копировать'; }, 1600);
+    });
+  });
+</script>
 
 <style>
   .mx { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
@@ -130,7 +286,7 @@
 
 <div class="mx">
   <header class="mx-head" id="top">
-    <h1 class="mx-title">Mixer Benchmarks</h1>
+    
     <p class="mx-lede" data-read lang="ru">По моддингу Minecraft лучшая из наших моделей — Mixer-0.5B: итог
       <b data-draw="v" data-source="modding" data-field="total" data-where="model=Mixer-0.5B">—</b>
       против <b data-draw="v" data-source="modding" data-field="total" data-where="model=Qwen2.5-Coder-0.5B">—</b>
@@ -140,28 +296,7 @@
     <p class="mx-sub" data-read lang="ru">Все проверки автоматические, без ИИ-судьи. Моддинг — 60 задач из модов, которых модели не видели при обучении; HumanEval-Java — 158 задач с тестами. Запуск через llama.cpp на RX 7600, файлы Q8_0.</p>
   </header>
 
-  <section class="mx-tiles" id="tiles" aria-label="Главные цифры Mixer-0.5B">
-    <div class="mx-tile" id="tile-total">
-      <span class="mx-k">Моддинг, итог · Mixer-0.5B</span>
-      <span class="mx-big" data-draw="v" data-source="modding" data-field="total" data-where="model=Mixer-0.5B">—</span>
-      <span class="mx-cmp">Qwen3-0.6B без обучения: <span data-draw="v" data-source="modding" data-field="total" data-where="model=Qwen3-0.6B">—</span></span>
-    </div>
-    <div class="mx-tile" id="tile-api">
-      <span class="mx-k">Реальные импорты · Mixer-0.5B</span>
-      <span class="mx-big" data-draw="v" data-source="modding" data-field="real_api" data-where="model=Mixer-0.5B">—</span>
-      <span class="mx-cmp">Qwen3-0.6B без обучения: <span data-draw="v" data-source="modding" data-field="real_api" data-where="model=Qwen3-0.6B">—</span></span>
-    </div>
-    <div class="mx-tile" id="tile-he">
-      <span class="mx-k">HumanEval-Java, pass@1 · Mixer-0.5B</span>
-      <span class="mx-big" data-draw="v" data-source="humaneval" data-field="pass_at_1" data-where="model=Mixer-0.5B">—</span>
-      <span class="mx-cmp">Qwen2.5-Coder-0.5B без обучения: <span data-draw="v" data-source="humaneval" data-field="pass_at_1" data-where="model=Qwen2.5-Coder-0.5B">—</span></span>
-    </div>
-    <div class="mx-tile" id="tile-speed">
-      <span class="mx-k">Скорость ответа · Mixer-0.5B</span>
-      <span class="mx-big" data-draw="v" data-source="models" data-field="gen_tok_s" data-where="model=Mixer-0.5B">—</span>
-      <span class="mx-cmp">Файл Q8_0: <span data-draw="v" data-source="models" data-field="gguf_mb" data-where="model=Mixer-0.5B">—</span></span>
-    </div>
-  </section>
+  
 
   <section class="mx-sec" id="modding">
     <h2>Моддинг Minecraft: итог по моделям</h2>
@@ -223,6 +358,19 @@
     <div class="mx-chart mx-loss" id="loss-chart" data-draw="loss" data-source="training" role="img" aria-label="Ошибка на проверочных примерах по шагам обучения для трёх версий Mixer"></div>
   </section>
 
+    <section class="mx-sec" id="skill">
+    <h2>Ум по ходу обучения</h2>
+    <p class="mx-sub" data-read lang="ru">Каждая точка — промежуточная версия модели, проверенная теми же бенчмарками. Шаг 0 — основа до обучения. Слева общая Java (HumanEval-Java, доля решённых задач), справа итог по моддингу.</p>
+    <div class="mx-skill-grid">
+      <div class="mx-chart mx-loss" id="skill-he" data-draw="skill" data-metric="humaneval" data-title="HumanEval-Java, %" data-source="skill" role="img" aria-label="Доля решённых задач HumanEval-Java по шагам обучения"></div>
+      <div class="mx-chart mx-loss" id="skill-mod" data-draw="skill" data-metric="modding_total" data-title="Моддинг, итог, %" data-source="skill" role="img" aria-label="Итог бенчмарка по моддингу по шагам обучения"></div>
+    </div>
+  </section>
+  <style>
+    .mx-skill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--cds-gap-lg); }
+    .mx-skill-empty { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: 24px 0; }
+  </style>
+  
   <section class="mx-sec" id="models">
     <h2>Модели</h2>
     <div class="mx-wrap">
@@ -490,6 +638,61 @@
   });
 })();
 </script>
+
+<script>
+  (function () {
+    const { showTip } = window.mx;
+    dash.draw('skill', (el) => {
+      const d = dash.data('skill');
+      if (d.status !== 'ok' || !d.data.length) {
+        const p = document.createElement('p'); p.className = 'mx-skill-empty';
+        p.textContent = 'Промежуточные версии ещё считаются — график появится после следующего обновления.';
+        el.replaceChildren(p); return;
+      }
+      const metric = el.dataset.metric;
+      const rows = d.data.map((r) => ({ run: r.run, step: +r.step, v: +r[metric] }));
+      const runs = [...new Set(rows.map((r) => r.run))];
+      const W = Math.max(280, el.clientWidth), H = 250, m = { t: 26, r: 14, b: 32, l: 36 };
+      const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.step)]).range([m.l, W - m.r]);
+      const lo = Math.max(0, d3.min(rows, (r) => r.v) - 5), hi = Math.min(100, d3.max(rows, (r) => r.v) + 5);
+      const y = d3.scaleLinear().domain([lo, hi]).nice().range([H - m.b, m.t]);
+      const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+        .attr('aria-label', el.dataset.title + ' по шагам обучения');
+      svg.append('text').attr('x', m.l).attr('y', 14).text(el.dataset.title).style('font-weight', 600).style('fill', 'var(--color-fg)');
+      svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r)
+        .attr('y1', (v) => y(v)).attr('y2', (v) => y(v)).style('stroke', 'var(--cds-chart-grid)');
+      svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 90))))
+        .call((g) => g.selectAll('line,path').style('stroke', 'var(--cds-chart-axis)'));
+      svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5))
+        .call((g) => g.selectAll('line,path').style('stroke', 'var(--cds-chart-axis)'));
+      runs.forEach((run, i) => {
+        const col = dash.colors[i % dash.colors.length];
+        const pts = rows.filter((r) => r.run === run).sort((a, b) => a.step - b.step);
+        svg.append('path').datum(pts).attr('fill', 'none').style('stroke', col).attr('stroke-width', 2)
+          .attr('d', d3.line().x((p) => x(p.step)).y((p) => y(p.v)));
+        svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.step)).attr('cy', (p) => y(p.v))
+          .attr('r', 3.2).style('fill', col);
+        const last = pts[pts.length - 1];
+        svg.append('text').attr('x', x(last.step) - 4).attr('y', y(last.v) - 8).attr('text-anchor', 'end')
+          .text(`${run}: ${last.v.toFixed(1).replace('.', ',')}%`);
+      });
+      const tip = document.createElement('div'); tip.className = 'mx-tip'; tip.hidden = true;
+      const node = svg.node();
+      node.addEventListener('mousemove', (ev) => {
+        const box = node.getBoundingClientRect();
+        const px = (ev.clientX - box.left) * (W / box.width), py = (ev.clientY - box.top) * (H / box.height);
+        let best = null, bd = Infinity;
+        rows.forEach((r) => { const dd = Math.hypot(x(r.step) - px, y(r.v) - py); if (dd < bd) { bd = dd; best = r; } });
+        if (!best || bd > 40) { tip.hidden = true; return; }
+        const full = d.data.find((r) => r.run === best.run && +r.step === best.step);
+        showTip(el, tip, ev, [[best.run + ', шаг ' + best.step], ['HumanEval-Java', full.humaneval + '%'],
+          ['Моддинг, итог', full.modding_total + '%'], ['Реальные импорты', full.real_api + '%'], ['Якоря', full.anchors + '%']]);
+      });
+      node.addEventListener('mouseleave', () => { tip.hidden = true; });
+      el.replaceChildren(node, tip);
+    });
+  })();
+  </script>
 
 </div>
 <footer class="mx-foot">
