@@ -1,0 +1,7 @@
+model,kind,tasks,pass_at_1,compile_error,tests_failed,timeout
+Qwen3-0.6B,основа,158,16.5,55.7,27.8,0
+Qwen3-0.6B abliterated,основа,158,15.2,51.9,32.3,1
+Qwen2.5-Coder-0.5B,основа,158,39.2,29.1,31.6,0
+Mixer-0.6B v1,Mixer,158,22.2,25.3,52.5,0
+Mixer-0.6B v2,Mixer,158,25.3,31.6,43.0,0
+Mixer-0.5B,Mixer,158,36.7,21.5,41.8,0

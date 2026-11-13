@@ -1,0 +1,4 @@
+model,base,params_b,hardware,train_minutes,epochs,examples,gen_tok_s,gguf_mb
+Mixer-0.6B v1,Qwen3-0.6B-Base,0.6,RX 7600,41.9,1,2599,76,610
+Mixer-0.6B v2,Huihui-Qwen3-0.6B-abliterated-v2,0.6,RX 7600,133.8,2,4971,100,610
+Mixer-0.5B,Qwen2.5-Coder-0.5B-Instruct,0.5,Kaggle 2x T4,77,2,4993,110,506
